@@ -2,40 +2,34 @@
   <div class="login-container">
    <h2>Chess & Chill</h2>
    
-   <form @submit.prevent="login">
-      <input v-model="email" type="email"  placeholder="Email (Hint: test@test.com)" name="email" id='email' required />
-      <input v-model="pass" type="password"  placeholder="Password (Hint: pass)" name="pass" id='pass' required />
-      <div class="btn-container">
-        <div class="btn" v-on:click="login">Login</div><div class="btn" v-on:click="signupNavigate">Signup</div>
+      <div class="name-container">
+        <input type="text" class="" placeholder="First Name" name="email" id='email' required />
+        <input type="text" class="" placeholder="Last Name" name="email" id='email' required />
       </div>
-    </form>
-      <p v-if="error" class="error">Incorrect Credentials. Try again!</p>
+      <input type="email" class="" placeholder="Email" name="email" id='email' required />
+      <input type="password" class="" placeholder="Password" name="email" id='email' required />
+      <div class="btn-container">
+        <div class="btn" v-on:click="signupSubmit">Signup</div><div class="btn" v-on:click="backNavigate">Back</div>
+      </div>
+      <p class="signUp" v-if="signedUp">Signed Up!</p>
   </div>
 </template>
 
 <script>
-import auth from '../auth'
-
-
 export default {
-  name: 'Login',
+  name: 'Signup',
   data: () => ({
-      email:'',
-      pass: '',
-      error:false
+      signedUp:false
   }),
-  methods: {
-    login () {
-      auth.login(this.email, this.pass, loggedIn => {
-        if (!loggedIn) {
-          this.error = true
-        } else {
-          this.$router.replace(this.$route.query.redirect || '/')
-        }
-      })
+  methods:{
+    signupSubmit(){
+      setTimeout(()=>{
+         this.signedUp = true
+      },1000)
+     
     },
-    signupNavigate(){
-      this.$router.replace('/signup')
+    backNavigate(){
+      this.$router.replace('/login')
     }
   }
 }
@@ -43,19 +37,28 @@ export default {
 
 <style lang="scss">
 .login-container{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
     padding:20px;
-    min-width: 400px;
+    min-width: 300px;
     width:30%;
-    box-shadow: 0 0 12px lightgrey;
     border-radius: 10px;
     background: white;
-    form{
-      width:100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
 }
+.name-container{
+  width: 70%;
+  display:flex;
+  flex-direction: row;
+  input{
+    margin:20px 0;
+  }
+  :first-child{
+    margin-right: 20px;
+  }
+}
+
+
 //standard button
 .btn-container{
   width:60%;
@@ -101,7 +104,7 @@ input{
     border-color: coral;
   }
 }
-.error {
-  color: red;
+.signUp {
+  color: limegreen;
 }
 </style>
