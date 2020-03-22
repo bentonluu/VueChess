@@ -33,7 +33,7 @@ export default {
     loggedIn () {
       return !!localStorage.token
     },
-  
+    //variable that gets set to true or false based on if we are logged in
     onChange () {}
   }
   // 1 second timeout fake login request that returns a token if authenticated

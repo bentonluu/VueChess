@@ -3,8 +3,8 @@
    <h2>Chess & Chill</h2>
    
    <form @submit.prevent="login">
-      <input v-model="email" type="email"  placeholder="Email" name="email" id='email' required />
-      <input v-model="pass" type="password"  placeholder="Password" name="pass" id='pass' required />
+      <input v-model="email" type="email"  placeholder="Email (Hint: test@test.com)" name="email" id='email' required />
+      <input v-model="pass" type="password"  placeholder="Password (Hint: pass)" name="pass" id='pass' required />
       <div class="btn-container">
         <div class="btn" v-on:click="login">Login</div><div class="btn" v-on:click="signupNavigate">Signup</div>
       </div>
