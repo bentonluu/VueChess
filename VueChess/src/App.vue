@@ -1,38 +1,45 @@
 <template>
   <div id="app">
-    <Login/>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import Login from './pages/Login'
+import auth from './auth'
+
 
 export default {
   name: 'app',
   components:{
-    Login
+    
   },
   data () {
     return {
-     
+      loggedIn: auth.loggedIn()
+    }
+  },
+  created () {
+    auth.onChange = loggedIn => {
+      this.loggedIn = loggedIn
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
+
 html{
   margin: 0 auto;
 }
 body{
-  /* background-color:#E0E0E0; */
+  background-color:#E0E0E0;
 }
 #app {
-  /* font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50; */
+  color: #2c3e50;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,4 +64,5 @@ li {
 a {
   color: #42b983;
 }
+
 </style>

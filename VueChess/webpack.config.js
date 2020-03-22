@@ -11,6 +11,14 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      },
+      {
         test: /\.css$/,
         use: [
           'vue-style-loader',
@@ -48,7 +56,6 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     noInfo: true,
-    noImplicitAny:false,
     overlay: true
   },
   performance: {
