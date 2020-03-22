@@ -8,6 +8,7 @@
 <script>
 import auth from '../../auth'
 
+
 export default {
   name: 'Main',
   data () {
