@@ -6,6 +6,7 @@ import VueCookies from 'vue-cookies'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Main from './pages/users/Main'
+import QuickPlay from './pages/users/QuickPlay'
 
 Vue.use(VueCookies)
 Vue.use(VueRouter)
@@ -49,6 +50,7 @@ const router = new VueRouter({
       }
     },
     { path: '/', component: Main, beforeEnter: requireAuth },
+    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth}
   ]
 })
 
