@@ -1,76 +1,107 @@
 <template>
-  <div>
-    <md-field>
-      <label>Initial Value</label>
-      <md-input v-model="initial"></md-input>
-    </md-field>
-
-    <md-field>
-      <label>Initial Value (Read Only)</label>
-      <md-input v-model="initial" readonly></md-input>
-    </md-field>
-
-    <md-field>
-      <label>Type here!</label>
-      <md-input v-model="type"></md-input>
-      <span class="md-helper-text">Helper text</span>
-    </md-field>
-
-    <md-field>
-      <label>With label</label>
-      <md-input v-model="withLabel" placeholder="A nice placeholder"></md-input>
-    </md-field>
-
-    <md-field md-inline>
-      <label>Inline</label>
-      <md-input v-model="inline"></md-input>
-    </md-field>
-
-    <md-field>
-      <label>Number</label>
-      <md-input v-model="number" type="number"></md-input>
-    </md-field>
-
-    <md-field>
-      <label>Textarea</label>
-      <md-textarea v-model="textarea"></md-textarea>
-    </md-field>
-
-    <md-field>
-      <label>Textarea with Autogrow</label>
-      <md-textarea v-model="autogrow" md-autogrow></md-textarea>
-    </md-field>
-
-    <md-field>
-      <label>Disabled</label>
-      <md-input v-model="disabled" disabled></md-input>
-    </md-field>
+  <div class="login-container">
+   <h2>Chess & Chill</h2>
+   
+   <form  @submit.prevent="login">
+      <input v-on:keyup.enter="login" v-model="email" type="email"  placeholder="Email (Hint: test@test.com)" name="email" id='email' required />
+      <input v-on:keyup.enter="login" v-model="pass" type="password"  placeholder="Password (Hint: pass)" name="pass" id='pass' required />
+      <div class="btn-container">
+        <div class="btn" v-on:click="login" >Login</div><div class="btn" v-on:click="signupNavigate">Signup</div>
+      </div>
+    </form>
+      <p v-if="error" class="error">Incorrect Credentials. Try again!</p>
   </div>
 </template>
 
 <script>
+import auth from '../auth'
+
+
 export default {
   name: 'Login',
   data: () => ({
-      initial: 'Initial Value',
-      type: null,
-      withLabel: null,
-      inline: null,
-      number: null,
-      textarea: null,
-      autogrow: null,
-      disabled: null
-    })
+      email:'',
+      pass: '',
+      error:false
+  }),
+  methods: {
+    login () {
+      auth.login(this.email, this.pass, loggedIn => {
+        if (!loggedIn) {
+          this.error = true
+        } else {
+          this.$router.replace(this.$route.query.redirect || '/')
+        }
+      })
+    },
+    signupNavigate(){
+      this.$router.replace('/signup')
+    }
+  }
 }
 </script>
 
-<style>
+<style lang="scss">
 .login-container{
     padding:20px;
-    width:50%;
-    height:300px;
+    min-width: 400px;
+    width:30%;
+    box-shadow: 0 0 12px lightgrey;
     border-radius: 10px;
     background: white;
+    form{
+      width:100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 }
-
+//standard button
+.btn-container{
+  width:60%;
+  display:flex;
+  flex-direction: row;
+  // space between buttons
+  :first-child{
+    margin-right: 20px;
+  }
+  margin-top:20px;
+}
+.btn{
+  border:2px solid lightgray;
+  padding:15px;
+  flex:1;
+  font-size:18px;
+  margin-bottom: 20px;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+  cursor:pointer;
+  &:hover{
+    background-color: coral;
+    border-color:coral;
+    color:white;
+  }
+  &:active{
+    background-color: lightsalmon;
+    border-color:lightsalmon;
+  }
+}
+// styling inputs
+input{
+  font-size: 18px;
+  margin: 20px;
+  width: 70%;
+  display: block;
+  border: none;
+  padding: 10px 0;
+  border-bottom: solid 2px grey;
+  transition:ease-in 0.2s all;
+  &:focus{
+    outline: none;
+    border-color: coral;
+  }
+}
+.error {
+  color: red;
+}
 </style>
