@@ -7,7 +7,7 @@
             <div class="btn" v-on:click="showModal">Invite Friend</div>
         </div>
 
-        <modal v-show="isModalVisible" @close="hideModal"></modal>
+        <modal v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
 
         {{searchedUsername}}
@@ -36,7 +36,6 @@ export default {
             this.isModalVisible = true;
         },
         hideModal(un) {
-            this.searchedUsername = un;
             this.isModalVisible = false;
         },
         showErrorModal() {
@@ -44,6 +43,10 @@ export default {
         },
         hideErrorModal() {
             this.isErrorModalVisible = false;
+        },
+        submit(un) {
+            this.searchedUsername = un;
+            this.isModalVisible = false;
         }
     }
 }

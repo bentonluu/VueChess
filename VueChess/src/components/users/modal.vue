@@ -6,8 +6,9 @@
                 <input v-model="username" type="text">
             </section>
 
-            <footer>
-                <div class="btn" v-on:click="close">Send Invite</div>
+            <footer class="footer">
+                <div class="btn" v-on:click="close">Close</div>
+                <div class="btn" v-on:click="submit">Send Invite</div>
             </footer>
         </div>
     </div>
@@ -23,7 +24,10 @@ export default {
     },
     methods: {
         close() {
-            this.$emit('close', this.username);
+            this.$emit('close');
+        },
+        submit() {
+            this.$emit('submit', this.username);
             this.username = '';
         }
     }
@@ -78,7 +82,7 @@ export default {
 input{
   font-size: 18px;
   margin: 20px;
-  width: 70%;
+  width: 90%;
   display: block;
   border: none;
   padding: 10px 0;
@@ -88,5 +92,9 @@ input{
     outline: none;
     border-color: coral;
   }
+}
+.footer {
+    display: flex;
+    flex-direction: row;
 }
 </style>
