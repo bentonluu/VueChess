@@ -1,12 +1,16 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
+import VueCookies from 'vue-cookies'
 // components 
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Main from './pages/users/Main'
 
+Vue.use(VueCookies)
 Vue.use(VueRouter)
+// set default config
+Vue.$cookies.config('1d')
 
 import auth from './auth'
 
@@ -31,7 +35,6 @@ function isLoggedIn (to,from,next){
     next()
   }
 }
-
 
 const router = new VueRouter({
   mode: 'history',
