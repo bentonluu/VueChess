@@ -42,28 +42,25 @@ class UsersDB{
     // ... Working on it
     // .
     // Create User
-    static insertUser(user){
+     static async insertUser(user){
+        //
+        if(user.username.length===0 || user.email.length ===0 || user.password.length ===0)return "Incomplete Fields"
         // check for dupplicates
         // ... Working on it
-        // var userExists = new Promise(async (resolve,reject)=>{
-        //     try {
-        //         const res = await axios.get(url);
-        //         const data = res.data
-        //         resolve(
-        //             data.map(user =>({
-        //                 ...user
-        //             }))
-        //         )
-        //     } catch (err) {
-        //         reject(err)
-        //     }
-        // })
-        return axios.post(url,{
-            username: user.username,
-            type: "User",
-            email: user.email,
-            password: user.password
-        })
+        var existingUsers = await this.checkExistingUser(user.username)
+        if(existingUsers.length===1){
+            return "User Exists"
+        }
+        else{
+            axios.post(url,{
+                username: user.username,
+                type: "User",
+                email: user.email,
+                password: user.password
+            })
+            return "User Created"
+        }
+        
     }
     // Create Admin
     static insertAdmin(user){
@@ -77,6 +74,19 @@ class UsersDB{
     // Delete User (Potentially)
     static deleteUser(id){
         return axios.delete(`${url}${id}`)
+    }
+    static checkExistingUser(username){
+        return new Promise(async (resolve,reject)=>{
+            try {
+                const res = await axios.get(`${url}${username}`);
+                const data = res.data
+                resolve(
+                    data
+                )
+            } catch (err) {
+                reject(err)
+            }
+        })
     }
 }
 

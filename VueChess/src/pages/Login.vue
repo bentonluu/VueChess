@@ -6,7 +6,7 @@
       <input v-on:keyup.enter="login" v-model="email" type="email"  placeholder="Email (Hint: test@test.com)" name="email" id='email' required />
       <input v-on:keyup.enter="login" v-model="pass" type="password"  placeholder="Password (Hint: pass)" name="pass" id='pass' required />
       <div class="btn-container">
-        <div class="btn"  >Login</div><div class="btn" v-on:click="signupNavigate">Signup</div>
+        <div class="btn" v-on:click="login" >Login</div><div class="btn" v-on:click="signupNavigate">Signup</div>
       </div>
     </form>
       <p v-if="error" class="error">Incorrect Credentials. Try again!</p>

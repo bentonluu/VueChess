@@ -1,28 +1,59 @@
 <template>
   <div class="login-container">
    <h2>Chess & Chill</h2>
-      <input type="text" class="" placeholder="Username" name="user" id='user' required />
-      <input type="email" class="" placeholder="Email" name="email" id='email' required />
-      <input type="password" class="" placeholder="Password" name="email" id='email' required />
+      <input type="text" class="" placeholder="Username" name="user" id='user' v-model="username" required />
+      <input type="email" class="" placeholder="Email" name="email" id='email' v-model="email" required />
+      <input type="password" class="" placeholder="Password" name="email" id='email' v-model="password" required />
       <div class="btn-container">
         <div class="btn" v-on:click="signupSubmit">Signup</div><div class="btn" v-on:click="backNavigate">Back</div>
       </div>
-      <p class="signUp" v-if="signedUp">Signed Up!</p>
+      <p class="signUp" v-if="signedUp">User created!</p>
+      <p class="error"  v-if="errorFieldsEmpty">Please Fill out every field.</p>
+      <p class="error"  v-if="errorDupplicate">User already exists.</p>
   </div>
 </template>
 
 <script>
+import UsersDB from '../UsersDB'
+
 export default {
   name: 'Signup',
   data: () => ({
+      username:'',
+      email:'',
+      password:'',
+      errorFieldsEmpty:false,
+      errorDupplicate:false,
       signedUp:false
   }),
   methods:{
     signupSubmit(){
-      setTimeout(()=>{
-         this.signedUp = true
-      },1000)
+      var user = {
+        username:this.username,
+        password:this.password,
+        email:this.email
+      }
+      UsersDB.insertUser(user).then(res => {
+        if(res=="User Created"){
+        this.errorFieldsEmpty = false
+        this.errorDupplicate = false
+        this.signedUp = true
+      }
+      else if(res=="User Exists"){
+        this.errorFieldsEmpty = false
+        this.errorDupplicate = true
+        this.signedUp = false
+      }
+      else if(res=="Incomplete Fields"){
+        this.errorFieldsEmpty = true
+        this.errorDupplicate = false
+        this.signedUp = false
+      }
+      })
      
+      
+
+      
     },
     backNavigate(){
       this.$router.replace('/login')
@@ -102,5 +133,8 @@ input{
 }
 .signUp {
   color: limegreen;
+}
+.error{
+  color:red;
 }
 </style>
