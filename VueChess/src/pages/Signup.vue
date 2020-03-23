@@ -1,11 +1,7 @@
 <template>
   <div class="login-container">
    <h2>Chess & Chill</h2>
-   
-      <div class="name-container">
-        <input type="text" class="" placeholder="First Name" name="email" id='email' required />
-        <input type="text" class="" placeholder="Last Name" name="email" id='email' required />
-      </div>
+      <input type="text" class="" placeholder="Username" name="user" id='user' required />
       <input type="email" class="" placeholder="Email" name="email" id='email' required />
       <input type="password" class="" placeholder="Password" name="email" id='email' required />
       <div class="btn-container">

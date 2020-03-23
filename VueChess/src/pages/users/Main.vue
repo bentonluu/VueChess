@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-    <h1>Main Page, Congrats!!!</h1>
+    <h1>Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
     <div class="btn" v-on:click="logOut">Log Out</div>
   </div>
 </template>
