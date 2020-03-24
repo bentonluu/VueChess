@@ -1,11 +1,5 @@
 <template>
   <div id="app">
-<<<<<<< HEAD
-    <nav>
-      <!--<router-link to="/">Home</router-link>-->
-    </nav>
-=======
->>>>>>> master
     <router-view/>
   </div>
 
@@ -13,7 +7,6 @@
 
 <script>
 import auth from './auth'
-
 
 export default {
   name: 'app',

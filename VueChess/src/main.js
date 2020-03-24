@@ -45,9 +45,9 @@ const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
-    { path: '/', component: ChessGame },
     { path: '/login', component: Login , beforeEnter: isLoggedIn},
     { path: '/signup', component: Signup },
+    { path: '/', component: ChessGame },
     { path: '/logout',
       beforeEnter (to, from, next) {
         auth.logout()
