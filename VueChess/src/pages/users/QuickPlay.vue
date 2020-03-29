@@ -2,6 +2,8 @@
     <div class="main-container">
         <h1>Quick Play</h1>
 
+        <div class="btn" v-on:click="toMainPage">Back</div>
+
         <div>
             <div class="btn">Random Player</div>
             <div class="btn" v-on:click="showModal">Invite Friend</div>
@@ -47,6 +49,9 @@ export default {
         submit(un) {
             this.searchedUsername = un;
             this.isModalVisible = false;
+        },
+        toMainPage() {
+            this.$router.replace('/')
         }
     }
 }
