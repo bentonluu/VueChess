@@ -48,7 +48,6 @@ const router = new VueRouter({
   routes: [
     { path: '/login', component: Login , beforeEnter: isLoggedIn},
     { path: '/signup', component: Signup },
-    { path: '/', component: ChessGame },
     { path: '/logout',
       beforeEnter (to, from, next) {
         auth.logout()
@@ -56,7 +55,8 @@ const router = new VueRouter({
       }
     },
     { path: '/', component: Main, beforeEnter: requireAuth },
-    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth}
+    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth },
+    { path: '/chessgame', component: ChessGame, beforeEnter: requireAuth },
   ]
 })
 

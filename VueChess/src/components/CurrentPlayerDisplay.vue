@@ -17,22 +17,19 @@
       }
     },
     props: {
-      positionMoveList: Array,
+      currentColor: String,
     },
     methods: {
       updateCurrentPlayerDisplayed() {
-        let arrayLength = this.positionMoveList.length;
-        if (arrayLength == 0) {
+        if (this.currentColor === 'white') {
           return 'White';
         }
-        else if (this.positionMoveList[arrayLength - 1].color == 'White') {
+        else if (this.currentColor === 'black') {
           return 'Black';
         }
         else {
           return 'White';
         }
-
-        //console.log(this.movePlayerHistory.length());
       },
     },
   }

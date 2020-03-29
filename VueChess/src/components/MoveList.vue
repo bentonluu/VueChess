@@ -11,7 +11,7 @@
         <tr v-for="(position, index) in positionMoveList" v-if="index != 0" :key="index">
           <td> {{ index }}</td>
           <td> {{ position.color }}</td>
-          <td> {{ position.move }}</td>
+          <td> {{ position.move[0] }}</td>
         </tr>
       </table>
     </div>
@@ -40,8 +40,6 @@
         else {
           return 'White';
         }
-
-        //console.log(this.movePlayerHistory.length());
       },
     },
   }
