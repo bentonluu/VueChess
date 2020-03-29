@@ -1,15 +1,20 @@
 import Vue from 'vue'
 import App from './App.vue'
+import VModal from 'vue-js-modal'
 import VueRouter from 'vue-router'
 import VueCookies from 'vue-cookies'
-// components 
+
+// components
+import ChessGame from './pages/ChessGame.vue'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Main from './pages/users/Main'
 import QuickPlay from './pages/users/QuickPlay'
 
+Vue.use(VModal, {dialog: true})
 Vue.use(VueCookies)
 Vue.use(VueRouter)
+
 // set default config
 Vue.$cookies.config('1d')
 
@@ -50,7 +55,8 @@ const router = new VueRouter({
       }
     },
     { path: '/', component: Main, beforeEnter: requireAuth },
-    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth}
+    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth },
+    { path: '/chessgame', component: ChessGame, beforeEnter: requireAuth },
   ]
 })
 
@@ -59,3 +65,4 @@ new Vue({
   router,
   render: h => h(App)
 })
+

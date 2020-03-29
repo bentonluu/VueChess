@@ -8,7 +8,7 @@
 
             <footer class="footer">
                 <div class="btn" v-on:click="close">Close</div>
-                <div class="btn" v-on:click="submit">Send Invite</div>
+                <div class="btn" v-on:click="submit">Invite</div>
             </footer>
         </div>
     </div>

@@ -2,16 +2,16 @@
   <div id="app">
     <router-view/>
   </div>
+
 </template>
 
 <script>
 import auth from './auth'
 
-
 export default {
   name: 'app',
   components:{
-    
+
   },
   data () {
     return {
@@ -64,5 +64,4 @@ li {
 a {
   color: #42b983;
 }
-
 </style>

@@ -1,28 +1,50 @@
 <template>
   <div class="main-container">
     <h1>Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
+    <div class="btn" v-on:click="goToQuickPlay">Quick Play</div>
     <div class="btn" v-on:click="logOut">Log Out</div>
   </div>
 </template>
 
 <script>
 import auth from '../../auth'
-
+import io from 'socket.io-client';
 
 export default {
   name: 'Main',
   data () {
     return {
-      
+      socket: io('http://localhost:3000'),
     }
   },
   methods:{
     logOut(){
-      setTimeout(()=>{
+      setTimeout(() => {
         this.$router.replace('/logout')
       },1000)
-      
+    },
+    goToQuickPlay() {
+      this.$router.replace({path: '/quickPlay'});
     }
+  },
+  created() {
+    let sessionID;
+    let data = sessionStorage.getItem('sessionId');
+    console.log(data);
+    if (data == null) {
+      sessionID = null;
+      this.socket.emit('beginSession', { sessionID: sessionID, username: this.$cookies.get("username") });
+    }
+    else {
+      sessionID = data;
+      this.socket.emit('beginSession', { sessionID: sessionID, username: this.$cookies.get("username") });
+    }
+
+    // Sets the sessionID into browser storage
+    this.socket.on("setSession", function(data) {
+      console.log("Session ID: " + data.sessionID);
+      sessionStorage.setItem('sessionId', data.sessionID);
+    });
   }
 }
 </script>
