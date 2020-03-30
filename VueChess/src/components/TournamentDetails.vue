@@ -40,6 +40,7 @@
 
 <script>
 import TournamentsDB from './../TournamentsDB'
+import io from 'socket.io-client';
 
 export default {
     name: 'tournamentDetails',
@@ -47,7 +48,8 @@ export default {
     data() {
         return {
             isAdmin: false,
-            tournamentDeleted: false
+            tournamentDeleted: false,
+            socket: io('http://localhost:3000')
         }
     },
     methods: {
@@ -62,7 +64,16 @@ export default {
             this.tournamentDeleted = true
         },
         joinTournament() {
+            this.socket.emit("changeRoom", this.tournamentInfo.name, this.tournamentInfo.maxPlayers)
 
+            // Sets the playerColor for the game into browser storage
+            this.socket.on('PLAYERCOLOR', (color) => {
+              sessionStorage.setItem('playerColor', color);
+            });
+
+            this.socket.on('STARTGAME', () => {
+              this.$router.replace('/chessgame');
+            });
         }
     },
     created() {

@@ -71,6 +71,10 @@ io.on('connection', function(socket) {
         }
     });
 
+    socket.on('STARTTOURNAMENT', function() {
+        console.log(socket.room)
+    })
+
     socket.on('LEAVEQUEUE', function() {
         pendingRooms.pop();
     });
@@ -96,7 +100,6 @@ io.on('connection', function(socket) {
         roomCount--;
     });
 
-
     socket.on('newUser', function(username){
         socket.username = username;
         usersMap.set(socket.id, username);
@@ -108,18 +111,22 @@ io.on('connection', function(socket) {
         io.emit('USERLIST', Array.from(usersMap.values()));
     });
 
-    socket.on('changeRoom', function(newRoom) {
-        if (roomCount < 2) {
+    socket.on('changeRoom', function(newRoom, maxPlayers) {
+        if (roomCount < maxPlayers) {
             var oldRoom = socket.room;
             socket.leave(socket.room);
 
             socket.join(newRoom);
             socket.room = newRoom;
 
-            io.emit('USERROOM', { old: oldRoom, new: socket.room });
             roomCount += 1;
-            if (roomCount == 2) {
-                io.emit('GAMESTART', '');
+            if (roomCount == maxPlayers) {
+
+                // pick 2 random people from the room
+                io.in(socket.room).clients((error, clients) => {
+                    console.log(clients);
+                })
+                io.emit('STARTGAME', '');
             }
             console.log("user added to room " + roomCount);
         }
