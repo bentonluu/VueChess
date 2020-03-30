@@ -12,9 +12,11 @@ export default {
         return
       }
       pretendRequest(email, pass, (res) => {
+        console.log(res);
         if (res.authenticated) {
           Vue.$cookies.set("user_session",res.token,60)
           Vue.$cookies.set("username",res.username,60)
+          Vue.$cookies.set("user_type", res.type, 60)
           if (cb) cb(true)
           this.onChange(true)
         } else {
@@ -54,6 +56,7 @@ export default {
       cb({
         authenticated: true,
         username: result[0].username,
+        type: result[0].type,
         token: Math.random().toString(36).substring(7)
       })
     } else {

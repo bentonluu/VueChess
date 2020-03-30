@@ -16,14 +16,14 @@
                 <th>Start Date and Time</th>
             </tr>
 
-            <tr class="row" v-for="tor in search" v-bind:key="tor.name" v-on:click="showDetailsModal(tor)">
+            <tr class="row" v-for="tor in search" v-bind:key="tor._id" v-on:click="showDetailsModal(tor)">
                 <td>{{tor.name}}</td>
-                <td>{{tor.players}}</td>
-                <td>{{tor.timeDateInfo}}</td>
+                <td>{{tor.maxPlayers}}</td>
+                <td>{{tor.startTime}}</td>
             </tr>
         </table>
 
-        <tournamentDetails :tournamentInfo="tournament" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
+        <tournamentDetails v-bind:tournamentInfo="tournament" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
         <manageTournament :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
 
     </div>
@@ -32,7 +32,8 @@
 <script>
     import tournamentDetails from '../../components/TournamentDetails'
     import manageTournament from '../../components/admin/ManageTournament'
-
+    import TournamentsDB from '../../TournamentsDB'
+    import UsersDB from '../../UsersDB'
 
     export default {
         name: 'userTournament',
@@ -42,24 +43,13 @@
         },
         data() {
             return {
-                isAdmin: true,
+                isAdmin: false,
                 isTournamentDetailsVisible: false,
                 isTournamentManagerVisible: false,
                 createNew: null,
                 tournament: {},
                 searchReq: null,
-                tournaments:[
-                    {
-                        name: "test",
-                        players: "1/2",
-                        timeDateInfo: "12:00"
-                    },
-                    {
-                        name: "boi2",
-                        players: "1/2",
-                        timeDateInfo: "12:00"
-                    }
-                ]
+                tournaments: []
             }
         },
         methods: {
@@ -76,13 +66,24 @@
             },
             hideTournamentManager() {
                 this.isTournamentManagerVisible = false;
+                this.refresh()
             },
-            showDetailsModal(tournament) {
+            showDetailsModal(tor) {
+                this.tournament = tor
                 this.isTournamentDetailsVisible = true
-                this.tournament = tournament
             },
             hideDetailsModal() {
                 this.isTournamentDetailsVisible = false
+                this.refresh()
+            },
+            refresh() {
+                TournamentsDB.getTournaments().then(res => {
+                console.log(res)
+                res.forEach(element => {
+                    element.startTime = new Date(element.startTime).toLocaleString()
+                });
+                this.tournaments = res
+            })
             }
         },
         computed: {
@@ -95,6 +96,14 @@
                     return this.tournaments
                 }
             }
+        },
+        mounted () {
+            this.refresh()
+        },
+        created() {
+            if (this.$cookies.get("user_type") === "Admin") {
+                this.isAdmin = true
+            } 
         }
     }
 </script>

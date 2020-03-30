@@ -18,16 +18,18 @@
                     <div class="maincolumn">
                         <div class="row">
                             <div class="column">Players</div>
-                            <div class="column">{{tournamentInfo.players}}</div>
+                            <div class="column">{{tournamentInfo.maxPlayers}}</div>
                         </div>
 
                         <div class="row">
                             <div class="column">Start Date & Time</div>
-                            <div class="column">{{tournamentInfo.timeDateInfo}}</div>
+                            <div class="column">{{tournamentInfo.startTime}}</div>
                         </div>
                     </div>
                 </div>
             </section>
+
+            <p class="delete" v-if="tournamentDeleted">Tournament deleted</p>
 
             <footer class="footer">
                 <div class="btn" v-on:click="close">Close</div>
@@ -37,13 +39,15 @@
 </template>
 
 <script>
+import TournamentsDB from './../TournamentsDB'
 
 export default {
     name: 'tournamentDetails',
     props: ['tournamentInfo'],
     data() {
         return {
-            isAdmin: false
+            isAdmin: false,
+            tournamentDeleted: false
         }
     },
     methods: {
@@ -54,11 +58,17 @@ export default {
             this.$emit('edit');
         },
         deleteTournament() {
-
+            TournamentsDB.deleteTournament(this.tournamentInfo.name)
+            this.tournamentDeleted = true
         },
         joinTournament() {
 
         }
+    },
+    created() {
+        if (this.$cookies.get("user_type") === "Admin") {
+            this.isAdmin = true
+        } 
     }
 }
 </script>
@@ -115,5 +125,8 @@ export default {
 }
 .creator {
     text-align: left;
+}
+.delete {
+  color: limegreen;
 }
 </style>

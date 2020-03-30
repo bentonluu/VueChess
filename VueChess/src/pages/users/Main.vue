@@ -8,25 +8,24 @@
       <div class="btn" v-on:click="toLeaderboards">Leaderboards</div>
       <div class="btn" v-on:click="toUnlockables">Unlockables</div>
     </div>
-
     <div class="btn" v-on:click="logOut">Log Out</div>
   </div>
 </template>
 
 <script>
 import auth from '../../auth'
-
+import io from 'socket.io-client';
 
 export default {
   name: 'Main',
   data () {
     return {
-      
+      socket: io('http://localhost:3000'),
     }
   },
   methods:{
     logOut(){
-      setTimeout(()=>{
+      setTimeout(() => {
         this.$router.replace('/logout')
       },1000)
 
@@ -43,6 +42,25 @@ export default {
     toUnlockables(){
       this.$router.replace('unlockables')
     }
+  },
+  created() {
+    let sessionID;
+    let data = sessionStorage.getItem('sessionId');
+    console.log(data);
+    if (data == null) {
+      sessionID = null;
+      this.socket.emit('beginSession', { sessionID: sessionID, username: this.$cookies.get("username") });
+    }
+    else {
+      sessionID = data;
+      this.socket.emit('beginSession', { sessionID: sessionID, username: this.$cookies.get("username") });
+    }
+
+    // Sets the sessionID into browser storage
+    this.socket.on("setSession", function(data) {
+      console.log("Session ID: " + data.sessionID);
+      sessionStorage.setItem('sessionId', data.sessionID);
+    });
   }
 }
 </script>

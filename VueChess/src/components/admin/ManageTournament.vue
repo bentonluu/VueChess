@@ -12,12 +12,12 @@
 
                         <div class="row">
                             <label>Player Capacity:</label>
-                            <input v-model="playerCapacity" type="text" placeholder="Enter a number divisible by 2" required>
+                            <input v-model="maxPlayers" type="text" placeholder="Enter a number divisible by 2" required>
                         </div>
 
                         <div class="row">
                             <label>Start Date:</label>
-                            <input v-model="startDate" type="text" placeholder="yyyy/mm/dd" required>
+                            <input v-model="startDate" type="text" placeholder="yyyy-mm-dd" required>
                         </div>
 
                         <div class="row">
@@ -28,12 +28,15 @@
                 </div>
             </section>
 
+            <p class="signUp" v-if="created">Tournament created!</p>
             <p class="error" v-if="errorDateFormat">Date does not match format.</p>
             <p class="error" v-if="errorTime">Time must be between 00:00 and 24:00.</p>
             <p class="error" v-if="errorFieldsEmpty">Please Fill out every field.</p>
+            <p class="error" v-if="errorDuplicate">Tournament already exists.</p>
+            <p class="error" v-if="errorPlayerCount">Number of players must be an even number.</p>
 
             <footer class="footer">
-                <div class="btn" v-on:click="close">Cancel</div>
+                <div class="btn" v-on:click="close">Close</div>
                 <div class="btn" v-show="!create" v-on:click="createTournament">Update</div>
                 <div class="btn" v-show="create" v-on:click="createTournament">Create</div>
             </footer>
@@ -42,6 +45,8 @@
 </template>
 
 <script>
+import TournamentsDB from '../../TournamentsDB'
+
 export default {
     name: 'manageTournament',
     props: ['tournamentInfo', 'create'],
@@ -50,24 +55,83 @@ export default {
             isAdmin: true,
             errorFieldsEmpty: false,
             errorDateFormat: false,
+            errorDuplicate: false,
             errorTime: false,
+            errorPlayerCount: false,
+            created: true,
             name: '',
-            playerCapacity: '',
+            maxPlayers: '',
             startDate: '',
             startTime: ''
         }
     },
     methods: {
         close() {
+            this.created = false
+            this.errorTime = false
+            this.errorFieldsEmpty = false
+            this.errorDateFormat = false
+            this.errorDuplicate = false
             this.$emit('close');
         },
         createTournament() {
+
+            if (!this.startDate.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)) {
+                this.errorDateFormat = true
+                return
+            }
+
+            if (!this.startTime.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
+                this.errorTime = true
+                return
+            }
+
+            if (this.maxPlayers % 2 !== 0) {
+                this.errorPlayerCount = true
+                return
+            }
+
+            var timeDateString = this.startDate + 'T' + this.startTime + 'Z'
+
+            var startTime = new Date(timeDateString)
+
             var tournament = {
                 name: this.name,
-                playerCapacity: this.playerCapacity,
-                startDate: this.startDate,
-                startTime: this.startTime
+                maxPlayers: this.maxPlayers,
+                startTime: startTime
             }
+
+            TournamentsDB.insertTournament(tournament).then(res => {
+                if (res == "Tournament Created") {
+                    this.created = true
+                    this.errorTime = false
+                    this.errorFieldsEmpty = false
+                    this.errorDateFormat = false
+                    this.errorDuplicate = false
+                    this.errorPlayerCount = false
+                }
+                else if (res == "Tournament Exists") {
+                    this.errorDuplicate = true
+                    this.created = false
+                    this.errorTime = false
+                    this.errorFieldsEmpty = false
+                    this.errorDateFormat = false
+                    this.errorPlayerCount = false
+                }
+                else if (res == "Incomplete Fields") {
+                    this.errorFieldsEmpty = true
+                    this.created = false
+                    this.errorTime = false
+                    this.errorDateFormat = false
+                    this.errorDuplicate = false
+                    this.errorPlayerCount = false
+                }
+            })
+
+            this.name = ''
+            this.maxPlayers = ''
+            this.startDate = ''
+            this.startTime = ''
         }
     }
 }
@@ -92,7 +156,6 @@ export default {
 .maincolumn {
     flex: 1;
     padding: 20px;
-    border-right: 1px solid black;
 }
 .options {
     display: flex;
@@ -127,5 +190,8 @@ export default {
 }
 .error{
   color:red;
+}
+.signUp {
+  color: limegreen;
 }
 </style>
