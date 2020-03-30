@@ -6,71 +6,36 @@
                 <div class="mainrow">
                     <div class="maincolumn">
                         <div class="row">
-                            <div class="column">Name:</div>
-                            <input type="text">
+                            <label>Name:</label>
+                            <input v-model="name" type="text" required>
                         </div>
 
                         <div class="row">
-                            <div class="column">Player Capacity:</div>
-                            <input type="text" placeholder="Enter a number divisible by 2">
+                            <label>Player Capacity:</label>
+                            <input v-model="playerCapacity" type="text" placeholder="Enter a number divisible by 2" required>
                         </div>
 
                         <div class="row">
-                            <div class="column">Start Date & Time:</div>
-                            <input type="text" placeholder="yyyy/mm/dd">
+                            <label>Start Date:</label>
+                            <input v-model="startDate" type="text" placeholder="yyyy/mm/dd" required>
                         </div>
 
                         <div class="row">
-                            <input type="text" placeholder="24hr time">
-                            <select id="timezone">
-                                <option value="MST">MST</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="row">
-                            <div class="column">First 40 moves:</div>
-                            <input type="text" placeholder="Default: 90">
-                            <select id="time">
-                                <option value="min">mins</option>
-                                <option value="sec">secs</option>
-                            </select>
-                        </div>
-
-                        <div class="row">
-                            <div class="column">After 40 moves</div>
-                            <input type="text" placeholder="Default: 30">
-                            <select id="time">
-                                <option value="min">mins</option>
-                                <option value="sec">secs</option>
-                            </select>                            
-                        </div>
-
-                        <div class="row">
-                            <div class="column">Additional time per move</div>
-                            <input type="text" placeholder="Default: 30">
-                            <select id="time">
-                                <option value="min">mins</option>
-                                <option value="sec">secs</option>
-                            </select>   
-                        </div>
-
-                        <div class="row">
-                            <div class="column">Pause time</div>
-                            <input type="text" placeholder="Default: 5">
-                            <select id="time">
-                                <option value="min">mins</option>
-                                <option value="sec">secs</option>
-                            </select>   
+                            <label>Start Time:</label>
+                            <input v-model="startTime" type="text" placeholder="24hr time" required>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <p class="error" v-if="errorDateFormat">Date does not match format.</p>
+            <p class="error" v-if="errorTime">Time must be between 00:00 and 24:00.</p>
+            <p class="error" v-if="errorFieldsEmpty">Please Fill out every field.</p>
+
             <footer class="footer">
+                <div class="btn" v-on:click="close">Cancel</div>
                 <div class="btn" v-show="!create" v-on:click="createTournament">Update</div>
                 <div class="btn" v-show="create" v-on:click="createTournament">Create</div>
-                <div class="btn" v-on:click="close">Cancel</div>
             </footer>
         </div>
     </div>
@@ -83,10 +48,13 @@ export default {
     data() {
         return {
             isAdmin: true,
-            f40: 90,
-            a40: 30,
-            pm: 30,
-            ps: 5
+            errorFieldsEmpty: false,
+            errorDateFormat: false,
+            errorTime: false,
+            name: '',
+            playerCapacity: '',
+            startDate: '',
+            startTime: ''
         }
     },
     methods: {
@@ -94,7 +62,12 @@ export default {
             this.$emit('close');
         },
         createTournament() {
-            
+            var tournament = {
+                name: this.name,
+                playerCapacity: this.playerCapacity,
+                startDate: this.startDate,
+                startTime: this.startTime
+            }
         }
     }
 }
@@ -110,6 +83,7 @@ export default {
     display: flex;
     background-color: lightgray;
     border-bottom: 1px solid black;
+    align-items: center;
 }
 .column {
     flex: 1;
@@ -150,5 +124,8 @@ export default {
 .footer {
     display: flex;
     flex-direction: row;
+}
+.error{
+  color:red;
 }
 </style>

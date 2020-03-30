@@ -7,10 +7,12 @@
                     <h1>{{tournamentInfo.name}}</h1>
                     <div class="btn" v-on:click="editTournament" v-show="isAdmin">Edit</div>
                     <div class="btn" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
-                    <div class="btn" v-on:click="joinTournament" >Join</div>
+                    <div class="btn" v-on:click="joinTournament">Join</div>
                 </div>
 
-                <div><strong>Creator:</strong> test</div>
+                <div class="creator">
+                    <strong>Creator:</strong> test
+                </div>
 
                 <div class="mainrow">
                     <div class="maincolumn">
@@ -22,27 +24,6 @@
                         <div class="row">
                             <div class="column">Start Date & Time</div>
                             <div class="column">{{tournamentInfo.timeDateInfo}}</div>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="row">
-                            <div class="column">First 40 moves</div>
-                            <div class="column">{{tournamentInfo.timeRules.f40}} mins (def)</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="column">After 40 moves</div>
-                            <div class="column">{{tournamentInfo.timeRules.a40}} min (def)</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="column">Additional time per move</div>
-                            <div class="column">{{tournamentInfo.timeRules.pm}} secs (def)</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="column">Pause time</div>
-                            <div class="column">{{tournamentInfo.timeRules.ps}} mins (def)</div>
                         </div>
                     </div>
                 </div>
@@ -100,7 +81,6 @@ export default {
 .maincolumn {
     flex: 1;
     padding: 20px;
-    border-right: 1px solid black;
 }
 .options {
     display: flex;
@@ -132,5 +112,8 @@ export default {
 .footer {
     display: flex;
     flex-direction: row;
+}
+.creator {
+    text-align: left;
 }
 </style>
