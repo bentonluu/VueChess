@@ -22,9 +22,12 @@ var roomCount = 0;
 app.use(bodyParser.json())
 app.use(cors())
 
-// Make requests to users api
+// Make requests to users & tournament api
 const users = require('./userCollection')
 app.use('/api/users',users)
+
+const tournaments = require('./tournamentCollection')
+app.use('/api/tournaments',tournaments)
 
 // Socket setup
 io.on('connection', function(socket) {
