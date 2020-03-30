@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="tableMoveList">
-      <table>
+      <table id="tableTest">
         <tr>
           <th>Move #</th>
           <th>Player</th>
@@ -46,16 +46,17 @@
 </script>
 
 <style scoped>
-  table, th, td {
-    border: 2px solid black;
-    text-align: center;
-    padding: 10px;
-    font-size: 20px;
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin:  auto;
   }
 
-  table {
-    border-collapse: collapse;
-    margin: 0 auto;
+  th, td {
+    text-align: center;
+    padding: 15px;
+    font-size: 20px;
+    border-bottom: 2px solid lightgray;
   }
 
   th {
@@ -68,4 +69,19 @@
     font-weight: bold;
     color: white;
   }
+
+  table tr:first-child th:first-child {
+    border-top-left-radius: 8px;
+    padding-left: 30px;
+  }
+
+  table tr:first-child th:last-child {
+    border-top-right-radius: 8px;
+    padding-right: 30px;
+  }
+
+  table tr:last-child td {
+    border: none;
+  }
+
 </style>

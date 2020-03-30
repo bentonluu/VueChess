@@ -2,7 +2,7 @@
   <div id="chessboard">
     <span class="playerName playerBlack">{{ playerBlack }}</span>
     <div v-if="playerColor === 'white'">
-      <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[0]">
+      <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[1]">
         <chessboard class="cg-board-wrap" :fen="currentFenString" @onMove="showInfo"/>
         <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
       </div>
@@ -135,12 +135,11 @@
   }
 
   .playerBlack {
-    margin-top: 10px;
     margin-bottom: 20px;
   }
 
   .playerWhite {
-    margin-top: 25px;
+    margin-top: 20px;
     margin-bottom: 10px;
   }
 

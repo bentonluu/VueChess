@@ -10,12 +10,11 @@
           <Chessboard :key="windowResize" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
         </div>
       </div>
-      <div class="secondColumn">
+      <div class="secondColumn divider">
         <CurrentPlayerDisplay class="currentMoveDisplayRow" :currentColor="currentColor"/>
         <MoveList class="moveListRow" :positionMoveList="positionMoveList"/>
-        <input class="settingButton" type="image" src="./src/img/icons8-settings.svg" @click="showGameSettingsModal"/>
+        <div class="pauseButtonRow button" @click="showGameSettingsModal">Pause ||</div>
         <GameSettingsModal class="topLayer" v-show="isGameSettingsModalVisible" @close="hideGameSettingsModal" @leave="leaveGame"/>
-        <p>{{ currentFenString }}</p>
       </div>
     </div>
   </div>
@@ -72,7 +71,8 @@
         else {
           this.positionMoveList.push({color: 'Black', move: game.history, fenString: game.fenString })
         }
-      })
+      });
+
     },
     components: {
       Chessboard,
@@ -111,25 +111,51 @@
       },
       leaveGame() {
         this.$router.replace('/');
-      }
+      },
     }
   }
 </script>
 
 <style>
-  .topLayer {
-    z-index: 2;
-  }
+.topLayer {
+  z-index: 2;
+}
+
+.button {
+  border: 2px solid lightgray;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+  cursor: pointer;
+  padding: 20px;
+  flex:1;
+  margin-left: 30%;
+  margin-right: 30%;
+  align-self: center;
+  font-size:18px;
+}
+
+.button:hover{
+   background-color: coral;
+   border-color:coral;
+   color:white;
+ }
+
+.button:active{
+   background-color: lightsalmon;
+   border-color:lightsalmon;
+ }
+
 * {
-  box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
 .gridContainer {
+  box-sizing: border-box;
   display: grid;
-  border-style: solid;
-  border-color: red;
+  box-shadow: 0 0 12px lightgrey;
+  border-radius: 10px;
+  padding: 20px;
   grid-gap: 10px;
 }
 
@@ -143,8 +169,8 @@
 }
 
 .secondColumn {
-  border-style: solid;
-  border-color: green;
+/*  border-style: solid;*/
+/*  border-color: green;*/
   grid-column: 2;
   grid-row: 1;
   text-align: center;
@@ -153,13 +179,16 @@
 
 @media (min-width: 1100px) {
   .gridContainer {
+    box-sizing: border-box;
     display: grid;
-    border-style: solid;
-    border-color: red;
-    grid-template-columns: 70%;
+    box-shadow: 0 0 12px lightgrey;
+    border-radius: 10px;
+    grid-template-columns: 65%;
+    grid-template-rows: 1fr 3fr 1fr;
     grid-gap: 10px;
-    width: 100vw;
-    height: 100vh;
+    width: 95vw;
+    height: 95vh;
+    background: white;
   }
 
   .chessGameColumn {
@@ -171,34 +200,44 @@
   }
 
   .secondColumn {
-    border-style: solid;
-    border-color: orange;
-    grid-template-rows: 1fr 2fr;
-    grid-row: span 2;
+    border-left: 1px solid lightgray;
+    padding-left: 2vw;
+/*    border-style: solid;*/
+/*    border-color: orange;*/
+    display: grid;
+    grid-column: 2;
+    grid-template-rows: 1fr 6fr 1fr;
+    grid-row: span 3;
   }
 
   .currentMoveDisplayRow {
     border-style: solid;
     border-color: white;
-    grid-column: 2;
-    grid-row: 0;
+    grid-column: span 2;
+    grid-row: 1;
   }
 
   .moveListRow {
-    border-style: solid;
-    border-color: purple;
-    grid-column: 2;
-    grid-row: 1;
-    text-align: center;
-    overflow: scroll;
-  }
-
-  .settingButtonRow {
-    border-style: solid;
-    border-color: dodgerblue;
-    grid-column: 2;
+/*    border-style: solid;*/
+/*    border-color: purple;*/
+    grid-column: span 2;
     grid-row: 2;
     text-align: center;
+    overflow: scroll;
+    border: 1px solid black;
+    margin: 0 auto;
+    border: 2px solid lightgray;
+    border-radius: 10px;
+    box-shadow: 0 0 12px lightgrey;
+  }
+
+  .pauseButtonRow {
+    border-style: solid;
+    grid-column: span 2;
+    grid-row: 3;
+    text-align: center;
+    color: coral;
+    margin-top: 10px;
   }
 }
 </style>
