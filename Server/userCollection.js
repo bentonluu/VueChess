@@ -3,6 +3,28 @@ const mongodb = require('mongodb')
 
 const router = express.Router();
 
+//Increment Wins
+router.put('/:username/win',async (req,res)=>{
+    const users = await loadUsersCollection()
+    await users.updateOne
+    (
+        { username : req.params.username },
+        { $inc: { wins : 1 } }
+        );
+    res.status(201).send()
+});
+
+//Increment Losses
+router.put('/:username/loss',async (req,res)=>{
+    const users = await loadUsersCollection()
+    await users.updateOne
+    (
+        { username : req.params.username },
+        { $inc: { losses : 1 } }
+        );
+    res.status(201).send()
+});
+
 //Get Users
 router.get('/',async (req,res)=>{
     const users = await loadUsersCollection()

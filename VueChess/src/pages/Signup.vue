@@ -50,9 +50,6 @@ export default {
         this.signedUp = false
       }
       })
-     
-      
-
       
     },
     backNavigate(){

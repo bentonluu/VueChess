@@ -36,11 +36,16 @@ class UsersDB{
         })
     }
 
+    //Increment Wins
+    static incrementWins(username){
+        return axios.put(`${url}${username}/win`)
+    }
 
-    // Get a user by username
-    // .
-    // ... Working on it
-    // .
+    //Increment Losses
+    static incrementLosses(username){
+        return axios.put(`${url}${username}/loss`)
+    }
+    
     // Create User
      static async insertUser(user){
         //
@@ -75,6 +80,8 @@ class UsersDB{
     static deleteUser(id){
         return axios.delete(`${url}${id}`)
     }
+
+    //Get user by username
     static checkExistingUser(username){
         return new Promise(async (resolve,reject)=>{
             try {

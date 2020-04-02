@@ -36,7 +36,7 @@ export default {
     },
     signupNavigate(){
       this.$router.replace('/signup')
-    }
+    },
   }
 }
 </script>
