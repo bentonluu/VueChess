@@ -2,6 +2,7 @@
   <div class="main-container">
     <h1>Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
     <div class="btn" v-on:click="goToQuickPlay">Quick Play</div>
+    <div class="btn" v-on:click="goToLeaderBoard">Leader Board</div>
     <div class="btn" v-on:click="logOut">Log Out</div>
   </div>
 </template>
@@ -25,6 +26,9 @@ export default {
     },
     goToQuickPlay() {
       this.$router.replace({path: '/quickPlay'});
+    },
+    goToLeaderBoard() {
+      this.$router.replace({path: '/leaderboard'});
     }
   },
   created() {
