@@ -13,8 +13,8 @@ export default {
       }
       pretendRequest(email, pass, (res) => {
         if (res.authenticated) {
-          Vue.$cookies.set("user_session",res.token,60)
-          Vue.$cookies.set("username",res.username,60)
+          Vue.$cookies.set("user_session",res.token,60*15)
+          Vue.$cookies.set("username",res.username,60*15)
           if (cb) cb(true)
           this.onChange(true)
         } else {
