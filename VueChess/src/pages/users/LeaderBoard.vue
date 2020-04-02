@@ -2,9 +2,26 @@
     <div class="main-container">
         <h1>Chess Leader Board</h1>
 
-        <div>
-            <b-table striped hover :items="items"></b-table>
-        </div>
+        <table id="firstTable">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Win(s)</th>
+              <th>Loss</th>
+              <th>Draw(s)</th>
+              <th>W/L Ratio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows">
+              <td>{{row.username}}</td>
+              <td>{{row.win}}</td>
+              <td>{{row.loss}}</td>
+              <td>{{row.draw}}</td>
+              <td>{{row.ratio}}</td>
+            </tr>
+          </tbody>
+        </table>
 
         <modal v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
@@ -25,15 +42,17 @@ export default {
     },
     data () {
         return {
+        rows: [
+          { username: 'username1', win: "1000", loss: '1', draw: '0', ratio:'0' },
+          { username: 'username2', win: "1000", loss: '1', draw: '0',  ratio:'0' },
+          { username: 'username3', win: "1000", loss: '1', draw: '0', ratio:'0'},
+          { username: 'username4', win: "1000", loss: '1', draw: '0', ratio:'0' },
+          { username: 'username5', win: "1000", loss: '1', draw: '0', ratio:'0' },
+          { username: 'username6', win: "1000", loss: '1', draw: '0', ratio:'0' }
+        ],
             isModalVisible: false,
             isErrorModalVisible: false,
-            searchedUsername: "",
-            items: [
-          { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-          { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-          { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-          { age: 38, first_name: 'Jami', last_name: 'Carney' }
-        ]
+            searchedUsername: ""
         }
     },
     methods: {
@@ -86,5 +105,33 @@ export default {
     background-color: lightsalmon;
     border-color:lightsalmon;
   }
+}
+table {
+  font-family: 'Open Sans', sans-serif;
+  width: 750px;
+  border-collapse: collapse;
+  border: 3px solid #44475C;
+  margin: 10px 10px 0 10px;
+}
+
+table th {
+  text-transform: uppercase;
+  text-align: left;
+  background: #44475C;
+  color: #FFF;
+  padding: 8px;
+  min-width: 30px;
+}
+
+table td {
+  text-align: left;
+  padding: 8px;
+  border-right: 2px solid #7D82A8;
+}
+table td:last-child {
+  border-right: none;
+}
+table tbody tr:nth-child(2n) td {
+  background: #D4D8F9;
 }
 </style>
