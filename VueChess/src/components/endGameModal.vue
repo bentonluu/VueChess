@@ -44,12 +44,12 @@
         this.$emit('close');
       },
       wonGame(username) {
-        console.log('API WIN GAME');
         UsersDB.incrementWins(username);
+        sessionStorage.setItem('playerColor', '');
       },
       lostGame(username) {
-        console.log('API LOST GAME');
         UsersDB.incrementLosses(username);
+        sessionStorage.setItem('playerColor', '');
       }
     },
     watch: {

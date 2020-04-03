@@ -10,8 +10,6 @@
         <modal v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
         <waitModal v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
-
-        {{searchedUsername}}
     </div>
 </template>
 
@@ -61,7 +59,7 @@ export default {
             this.socket.on('PLAYERCOLOR', (color) => {
               let playerColor = sessionStorage.getItem('playerColor');
               if (playerColor !== ('' || null)) {
-                sessionStorage.setItem('playerColor', '')
+                sessionStorage.setItem('playerColor', '');
               }
               sessionStorage.setItem('playerColor', color);
 
@@ -73,7 +71,7 @@ export default {
         },
         hideWaitModal() {
           this.isWaitModalVisible = false;
-          sessionStorage.setItem('playerColor', '')
+          sessionStorage.setItem('playerColor', '');
           // Removes the currently pending random game from the queue
           this.socket.emit('LEAVEQUEUE', '');
         },

@@ -16,7 +16,7 @@
         <GameSettingsModal class="topLayer" v-show="isGameSettingsModalVisible" @close="hideGameSettingsModal" @leave="leaveGame"/>
       </div>
     </div>
-    <disconnectedModal class="topLayer" v-show="isDisconnectedModalVisible" @returnMain="leaveGame"/>
+    <disconnectedModal class="topLayer" v-show="isDisconnectedModalVisible" @returnMain="returnMainMenu"/>
   </div>
 </template>
 
@@ -76,10 +76,12 @@
         }
       });
 
+      // If an opponent disconnects from game, current player wins the game
       this.socket.on('SHOWDISCONNECT', () => {
         let user = this.$cookies.get('username');
         UsersDB.incrementWins(user);
-
+        console.log('disconnect by leaving');
+        sessionStorage.setItem('playerColor', '');
         this.isDisconnectedModalVisible = true;
       });
     },
@@ -122,8 +124,11 @@
       leaveGame() {
         let user = this.$cookies.get('username');
         UsersDB.incrementLosses(user);
-
+        sessionStorage.setItem('playerColor', '');
         this.socket.emit('LEAVEGAME', '');
+        this.$router.push('/');
+      },
+      returnMainMenu() {
         this.$router.push('/');
       },
     }
@@ -192,7 +197,6 @@
   grid-row: 2;
   grid-template-rows: 1fr 3fr 1fr;
   padding-bottom: 10px;
-
 }
 
 .currentMoveDisplayRow {
@@ -209,6 +213,7 @@
   border-radius: 10px;
   box-shadow: 0 0 12px lightgrey;
   overflow: scroll;
+  max-height: 400px;
 }
 
 .pauseButtonRow {
@@ -266,6 +271,7 @@
     margin: 0 auto;
     border-radius: 10px;
     box-shadow: 0 0 12px lightgrey;
+    max-height: 950px;
   }
 
   .pauseButtonRow {
