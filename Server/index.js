@@ -14,6 +14,7 @@ app.get('/', function(req, res) {
 });
 
 var usersMap = new Map();
+var gamesMap = new Map();
 var rooms = ['Lobby'];
 var pendingRooms = [];
 var roomCount = 0;
@@ -73,6 +74,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('INITGAME', function(gameRoom) {
+        gamesMap.set(socket.id, gameRoom);
         socket.join(gameRoom);
         console.log('room: ' + gameRoom);
     });
@@ -85,10 +87,29 @@ io.on('connection', function(socket) {
         io.to(game.gameRoomID).emit('UPDATEGAME', { position: game.gamePosition, color: game.color, history: game.gameHistory });
     });
 
+    socket.on('LEAVEGAME', function() {
+        socket.leave(gamesMap.get(socket.id));
+        io.to(gamesMap.get(socket.id)).emit('SHOWDISCONNECT', '');
+
+    });
+
     socket.on('disconnect', function() {
+        let currentGameRoom = gamesMap.get(socket.id);
+        gamesMap.delete(socket.id);
+
+        let gameRoomList = gamesMap.values();
+        for (let i = 0; i < gameRoomList.length; i++) {
+            console.log(gameRoomList[i]);
+            if (gameRoomList[i] === currentGameRoom) {
+                console.log(gameRoomList[i]);
+            }
+        }
+        //console.log(socket.id);
+        /*
         usersMap.delete(socket.id);
         socket.leave(socket.room);
         io.emit('USERLIST', Array.from(usersMap.values()));
+        */
         console.log("user left");
         roomCount--;
     });

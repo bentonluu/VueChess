@@ -2,13 +2,16 @@
     <div class="modal-backdrop">
         <div class="modal">
             <section class="body">
-                <div>Enter Username of Player:</div>
+                <div>Your random game code:</div>
+                <div><span class="code">{{ generateRandomCode() }}</span></div>
+                <br>
+                <div>Join a game (enter game code below)</div>
                 <input v-model="username" type="text">
             </section>
 
             <footer class="footer">
                 <div class="btn" v-on:click="close">Close</div>
-                <div class="btn" v-on:click="submit">Invite</div>
+                <div class="btn" v-on:click="submit">Join</div>
             </footer>
         </div>
     </div>
@@ -19,7 +22,7 @@ export default {
     name: 'modal',
     data () {
         return {
-            username: ''
+            username: '',
         }
     },
     methods: {
@@ -29,12 +32,26 @@ export default {
         submit() {
             this.$emit('submit', this.username);
             this.username = '';
+        },
+        generateRandomCode() {
+            let code = '';
+            let randomString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789' + 'abcdefghijklmnopqrstuvxyz';
+
+            for (let i = 0; i < 10; i++) {
+              let index = (randomString.length * Math.random());
+              code = code + randomString.charAt(index);
+            }
+            console.log(code);
+            return code;
         }
-    }
+    },
 }
 </script>
 
 <style lang="scss">
+.code {
+  font-weight: bold;
+}
 .btn{
   border:2px solid lightgray;
   padding:15px 55px;

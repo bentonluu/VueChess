@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="playerMoveTitle">
-      <span>Current Player Move</span>
+      <span>Current Move</span>
     </div>
     <div class="currentPlayerMove">
       {{ updateCurrentPlayerDisplayed() }}
@@ -37,21 +37,19 @@
 
 <style scoped>
   .playerMoveTitle {
-    padding-top: 30px;
+    padding-top: 20px;
     text-decoration: underline;
     font-size: 26px;
     font-weight: bold;
+    color: coral;
   }
 
   .currentPlayerMove {
-    margin-top: 15px;
-    margin-bottom: 30px;
-    font-size: 26px;
-    font-weight: bold;
-    padding: 15px;
-    border: 4px solid coral;
+    margin-bottom: 5px;
+    font-size: 32px;
+    font-weight: bolder;
+    padding: 5px;
     border-radius: 50px;
     display: inline-block;
-    min-width: 120px;
   }
 </style>

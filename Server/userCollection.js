@@ -3,6 +3,28 @@ const mongodb = require('mongodb')
 
 const router = express.Router();
 
+//Increment Wins
+router.put('/:username/win',async (req,res)=>{
+    const users = await loadUsersCollection()
+    await users.updateOne
+    (
+        { username : req.params.username },
+        { $inc: { wins : 1 } }
+    );
+    res.status(201).send()
+});
+
+//Increment Losses
+router.put('/:username/loss',async (req,res)=>{
+    const users = await loadUsersCollection()
+    await users.updateOne
+    (
+        { username : req.params.username },
+        { $inc: { losses : 1 } }
+    );
+    res.status(201).send()
+});
+
 //Get Users
 router.get('/',async (req,res)=>{
     const users = await loadUsersCollection()
@@ -46,7 +68,7 @@ router.delete('/:id', async (req,res)=>{
 
 async function loadUsersCollection(){
     const client = await mongodb.MongoClient.connect(
-        'mongodb+srv://admin:pass@cluster0-bzjjl.mongodb.net/test?retryWrites=true&w=majority',{   
+        'mongodb+srv://admin:pass@cluster0-bzjjl.mongodb.net/test?retryWrites=true&w=majority',{
         }
     )
     return client.db('VueChess').collection('Users')

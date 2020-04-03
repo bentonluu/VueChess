@@ -22,7 +22,7 @@ class UsersDB{
     }
     //Authenticate user
     static authenticate(user){
-        
+
         return new Promise(async (resolve,reject)=>{
             try {
                 const res = await axios.get(`${url}user/{"email":"${user.email}", "password":"${user.password}"}`);
@@ -36,11 +36,16 @@ class UsersDB{
         })
     }
 
+    //Increment Wins
+    static incrementWins(username){
+      return axios.put(`${url}${username}/win`)
+    }
 
-    // Get a user by username
-    // .
-    // ... Working on it
-    // .
+    //Increment Losses
+    static incrementLosses(username){
+      return axios.put(`${url}${username}/loss`)
+    }
+
     // Create User
      static async insertUser(user){
         //
@@ -60,7 +65,7 @@ class UsersDB{
             })
             return "User Created"
         }
-        
+
     }
     // Create Admin
     static insertAdmin(user){

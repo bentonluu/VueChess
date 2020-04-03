@@ -10,8 +10,6 @@
         <modal v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
         <waitModal v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
-
-        {{searchedUsername}}
     </div>
 </template>
 
@@ -59,16 +57,21 @@ export default {
 
             // Sets the playerColor for the game into browser storage
             this.socket.on('PLAYERCOLOR', (color) => {
+              let playerColor = sessionStorage.getItem('playerColor');
+              if (playerColor !== ('' || null)) {
+                sessionStorage.setItem('playerColor', '');
+              }
               sessionStorage.setItem('playerColor', color);
+
             });
 
             this.socket.on('STARTGAME', () => {
-              this.$router.replace('/chessgame');
+              this.$router.push('/chessgame').catch(err => {});
             });
         },
         hideWaitModal() {
           this.isWaitModalVisible = false;
-
+          sessionStorage.setItem('playerColor', '');
           // Removes the currently pending random game from the queue
           this.socket.emit('LEAVEQUEUE', '');
         },
