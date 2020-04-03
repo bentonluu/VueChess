@@ -23,7 +23,7 @@
             </tr>
         </table>
 
-        <tournamentDetails v-bind:tournamentInfo="tournament" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
+        <tournamentDetails v-bind:tournamentInfo="tournament" v-bind:disable="disable" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
         <manageTournament :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
 
     </div>
@@ -34,6 +34,7 @@
     import manageTournament from '../../components/admin/ManageTournament'
     import TournamentsDB from '../../TournamentsDB'
     import UsersDB from '../../UsersDB'
+    import io from 'socket.io-client';
 
     export default {
         name: 'userTournament',
@@ -48,8 +49,11 @@
                 isTournamentManagerVisible: false,
                 createNew: null,
                 tournament: {},
+                disable: false,
                 searchReq: null,
-                tournaments: []
+                tournaments: [],
+                currentPlayers: new Map(),
+                socket: io('http://localhost:3000'),
             }
         },
         methods: {
@@ -70,6 +74,10 @@
             },
             showDetailsModal(tor) {
                 this.tournament = tor
+                var tournamentID = sessionStorage.getItem("tournamentId")
+                if (tournamentID != null) {
+                    this.disable = true
+                }
                 this.isTournamentDetailsVisible = true
             },
             hideDetailsModal() {
@@ -82,8 +90,9 @@
                 res.forEach(element => {
                     element.startTime = new Date(element.startTime).toLocaleString()
                 });
-                this.tournaments = res
-            })
+                    this.tournaments = res
+                })
+
             }
         },
         computed: {
@@ -99,6 +108,12 @@
         },
         mounted () {
             this.refresh()
+
+            this.socket.on('updateTournamentPlayers', (data) => {
+                var newMap = new Map(JSON.parse(data))
+                this.currentPlayers = newMap
+            });
+
         },
         created() {
             if (this.$cookies.get("user_type") === "Admin") {

@@ -7,7 +7,7 @@
                     <h1>{{tournamentInfo.name}}</h1>
                     <div class="btn" v-on:click="editTournament" v-show="isAdmin">Edit</div>
                     <div class="btn" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
-                    <div class="btn" v-on:click="joinTournament">Join</div>
+                    <div v-bind:style="{'pointer-events': this.disable ? 'none' : null}" class="btn" v-on:click="joinTournament">Join</div>
                 </div>
 
                 <div class="creator">
@@ -44,7 +44,7 @@ import io from 'socket.io-client';
 
 export default {
     name: 'tournamentDetails',
-    props: ['tournamentInfo'],
+    props: ['tournamentInfo', 'disable'],
     data() {
         return {
             isAdmin: false,
@@ -64,15 +64,16 @@ export default {
             this.tournamentDeleted = true
         },
         joinTournament() {
-            this.socket.emit("changeRoom", this.tournamentInfo.name, this.tournamentInfo.maxPlayers)
 
-            // Sets the playerColor for the game into browser storage
-            this.socket.on('PLAYERCOLOR', (color) => {
-              sessionStorage.setItem('playerColor', color);
-            });
+            let sessionId = sessionStorage.getItem('sessionId');
+            console.log("sess id: " + sessionId)
+            this.socket.emit('beginTournament', 
+                { tournamentID: this.tournamentInfo.name, sessionID: sessionId, maxPlayers: this.tournamentInfo.maxPlayers});
 
-            this.socket.on('STARTGAME', () => {
-              this.$router.replace('/chessgame');
+            // Sets the sessionID into browser storage
+            this.socket.on("setTournament", function(data) {
+                console.log("Tournament ID: " + data.tournamentID);
+                sessionStorage.setItem('tournamentId', data.tournamentID);
             });
         }
     },
@@ -80,6 +81,29 @@ export default {
         if (this.$cookies.get("user_type") === "Admin") {
             this.isAdmin = true
         } 
+    },
+    mounted() {
+
+        this.socket.on("showTournamentModal", (data) => {
+            console.log(data.usersInTournament)
+        })
+
+        this.socket.on("startTournamentGame", (data) => {
+            console.log(data)
+            let sessionId = sessionStorage.getItem('sessionId');
+            if (data.sessionIDs.includes(sessionId)) {
+
+                sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
+
+                this.socket.on('STARTGAME', (data) => {
+                    console.log(data)
+                    if (data.includes(sessionId)) {
+                        this.$router.replace('/chessgame');
+                    }
+                });
+            }
+        })
+
     }
 }
 </script>

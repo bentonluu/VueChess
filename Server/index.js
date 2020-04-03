@@ -14,6 +14,7 @@ app.get('/', function(req, res) {
 });
 
 var usersMap = new Map();
+var tournamentsMap = new Map();
 var rooms = ['Lobby'];
 var pendingRooms = [];
 var roomCount = 0;
@@ -71,8 +72,45 @@ io.on('connection', function(socket) {
         }
     });
 
-    socket.on('STARTTOURNAMENT', function() {
-        console.log(socket.room)
+    socket.on('beginTournament', function(data) {
+        console.log(data)
+        if (tournamentsMap.get(data.tournamentID) ==  null || tournamentsMap.get(data.tournamentID).length < data.maxPlayers) {
+            console.log("added " + data.sessionID + " to tournament " + data.tournamentID)
+            addValue(data.tournamentID, data.sessionID)
+            socket.emit("setTournament", {tournamentID: data.tournamentID})
+        } 
+        
+        if (tournamentsMap.get(data.tournamentID).length == data.maxPlayers) {
+            console.log("Tournament lobby is full")
+            var sessionIDsInTournament = tournamentsMap.get(data.tournamentID)
+            var shuffledSessionList = sessionIDsInTournament.sort(() => 0.5 - Math.random())
+            var tournamentGroups = data.maxPlayers / 2
+            var test = []
+
+            if (shuffledSessionList.length > 2) {
+                while(shuffledSessionList.length > 0) {
+                    test.push(shuffledSessionList.splice(0, tournamentGroups))
+                }
+            } else {
+                test = shuffledSessionList;
+            }
+            
+            console.log(test)
+            if (test.length == 2) {
+                var gameID = 'game' + Math.round(Math.random() * 100).toString();
+                var colors = ["black", "white"]
+                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: test, colors: colors})
+            } else {
+
+                test.forEach (sessionIDPair => {
+                    var gameID = 'game' + Math.round(Math.random() * 100).toString();
+                    var colors = ["black", "white"]
+                    io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors})
+                });
+            }
+            io.emit("STARTGAME", test)
+        }
+        tournamentsMap.delete(data.tournamentID)
     })
 
     socket.on('LEAVEQUEUE', function() {
@@ -113,31 +151,26 @@ io.on('connection', function(socket) {
 
     socket.on('changeRoom', function(newRoom, maxPlayers) {
         if (roomCount < maxPlayers) {
-            var oldRoom = socket.room;
-            socket.leave(socket.room);
 
-            socket.join(newRoom);
-            socket.room = newRoom;
-
-            roomCount += 1;
             if (roomCount == maxPlayers) {
 
                 // pick 2 random people from the room
-                io.in(socket.room).clients((error, clients) => {
-                    console.log(clients);
-                })
                 io.emit('STARTGAME', '');
             }
             console.log("user added to room " + roomCount);
-        }
-
-        else {
+        } else {
             console.log("room full");
         }
     });
 
 
 });
+
+function addValue(key, value) {
+
+    tournamentsMap.set(key, tournamentsMap.get(key) || []);
+    tournamentsMap.get(key).push(value);
+}
 
 const port = process.env.PORT || 9000
 app.listen(port, () => console.log(`Server started on port: ${port}`))
