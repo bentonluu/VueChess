@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
    <h2>Chess & Chill</h2>
-   
+
    <form  @submit.prevent="login">
       <input v-on:keyup.enter="login" v-model="email" type="email"  placeholder="Email (Hint: test@test.com)" name="email" id='email' required />
       <input v-on:keyup.enter="login" v-model="pass" type="password"  placeholder="Password (Hint: pass)" name="pass" id='pass' required />
@@ -36,7 +36,7 @@ export default {
     },
     signupNavigate(){
       this.$router.replace('/signup')
-    }
+    },
   }
 }
 </script>

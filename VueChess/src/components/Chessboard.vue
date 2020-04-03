@@ -123,12 +123,8 @@
   }
 
   .playerName {
-    padding: 15px;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
-    color: white;
-    background: coral;
-    border-radius: 50px;
     min-width: 120px;
     display: inline-block;
     text-align: center;
@@ -136,45 +132,55 @@
 
   .playerBlack {
     margin-bottom: 20px;
+    color: coral;
+    margin-top: 2vh;
   }
 
   .playerWhite {
     margin-top: 20px;
-    margin-bottom: 10px;
+/*    margin-bottom: 10px;*/
   }
 
-  @media (min-height: 400px) and (min-width: 750px) {
+  @media (min-height: 600px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 320px;
-      width: 320px;
+      height: 410px;
+      width: 410px;
     }
   }
-
-  @media (min-height: 500px) and (min-width: 850px) {
+  @media (min-height: 650px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 420px;
-      width: 420px;
+      height: 430px;
+      width: 430px;
     }
   }
-
-  @media (min-height: 600px) and (min-width: 950px) {
+  @media (min-height: 700px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 520px;
-      width: 520px;
+      height: 440px;
+      width: 440px;
     }
   }
-
-  @media (min-height: 700px) and (min-width: 1050px) {
+  @media (min-height: 750px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 620px;
-      width: 620px;
+      height: 490px;
+      width: 490px;
     }
   }
-
-  @media (min-height: 900px) and (min-width: 1250px) {
+  @media (min-height: 800px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 730px;
-      width: 730px;
+      height: 590px;
+      width: 590px;
+    }
+  }
+  @media (min-height: 850px) and (min-width: 1100px) {
+    .cg-board-wrap {
+      height: 630px;
+      width: 630px;
+    }
+  }
+  @media (min-height: 900px) and (min-width: 1100px) {
+    .cg-board-wrap {
+      height: 680px;
+      width: 680px;
     }
   }
 </style>

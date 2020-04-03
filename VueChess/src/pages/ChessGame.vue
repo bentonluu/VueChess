@@ -6,7 +6,6 @@
           <Chessboard :key="windowResize" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
         </div>
         <div v-else>
-          <span>Test</span>
           <Chessboard :key="windowResize" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
         </div>
       </div>
@@ -17,6 +16,7 @@
         <GameSettingsModal class="topLayer" v-show="isGameSettingsModalVisible" @close="hideGameSettingsModal" @leave="leaveGame"/>
       </div>
     </div>
+    <disconnectedModal class="topLayer" v-show="isDisconnectedModalVisible" @returnMain="leaveGame"/>
   </div>
 </template>
 
@@ -26,7 +26,9 @@
   import MoveList from "../components/MoveList";
   import CurrentPlayerDisplay from "../components/CurrentPlayerDisplay";
   import GameSettingsModal from '../components/gameSettingsModal';
+  import disconnectedModal from "../components/disconnectedModal";
   import io from 'socket.io-client';
+  import UsersDB from "../UsersDB";
 
   export default {
     name: 'ChessGame',
@@ -40,6 +42,7 @@
         playerColor: '',
         endState: '',
         isGameSettingsModalVisible: false,
+        isDisconnectedModalVisible: false,
       }
     },
     created() {
@@ -73,12 +76,19 @@
         }
       });
 
+      this.socket.on('SHOWDISCONNECT', () => {
+        let user = this.$cookies.get('username');
+        UsersDB.incrementWins(user);
+
+        this.isDisconnectedModalVisible = true;
+      });
     },
     components: {
       Chessboard,
       MoveList,
       CurrentPlayerDisplay,
       GameSettingsModal,
+      disconnectedModal,
     },
     methods: {
       updatePositionInfo(position) {
@@ -110,7 +120,11 @@
         this.isGameSettingsModalVisible = false;
       },
       leaveGame() {
-        this.$router.replace('/');
+        let user = this.$cookies.get('username');
+        UsersDB.incrementLosses(user);
+
+        this.socket.emit('LEAVEGAME', '');
+        this.$router.push('/');
       },
     }
   }
@@ -154,27 +168,56 @@
   box-sizing: border-box;
   display: grid;
   box-shadow: 0 0 12px lightgrey;
+  grid-template-rows: 1fr 2fr;
   border-radius: 10px;
   padding: 20px;
   grid-gap: 10px;
+  width: 85vw;
+  background: white;
+  height: 100vh;
+  overflow-y: scroll;
 }
 
 .chessGameColumn {
+  margin: 0;
+  justify-self: center;
+  z-index: 1;
   grid-column: 1;
   grid-row: 1;
-  justify-self: center;
-  padding-left: 10vw;
-  padding-right: 10vw;
-  z-index: 1;
 }
 
 .secondColumn {
-/*  border-style: solid;*/
-/*  border-color: green;*/
-  grid-column: 2;
+  display: grid;
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-rows: 1fr 3fr 1fr;
+  padding-bottom: 10px;
+
+}
+
+.currentMoveDisplayRow {
+  grid-column: 1;
   grid-row: 1;
+  border-top: 1px solid lightgray;
+}
+
+.moveListRow {
+  grid-column: 1;
+  grid-row: 2;
   text-align: center;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 0 12px lightgrey;
   overflow: scroll;
+}
+
+.pauseButtonRow {
+  border-style: solid;
+  grid-column: 1;
+  grid-row: 3;
+  text-align: center;
+  color: coral;
+  margin-top: 10px;
 }
 
 @media (min-width: 1100px) {
@@ -202,8 +245,6 @@
   .secondColumn {
     border-left: 1px solid lightgray;
     padding-left: 2vw;
-/*    border-style: solid;*/
-/*    border-color: orange;*/
     display: grid;
     grid-column: 2;
     grid-template-rows: 1fr 6fr 1fr;
@@ -218,15 +259,11 @@
   }
 
   .moveListRow {
-/*    border-style: solid;*/
-/*    border-color: purple;*/
     grid-column: span 2;
     grid-row: 2;
     text-align: center;
     overflow: scroll;
-    border: 1px solid black;
     margin: 0 auto;
-    border: 2px solid lightgray;
     border-radius: 10px;
     box-shadow: 0 0 12px lightgrey;
   }
