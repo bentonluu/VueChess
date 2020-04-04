@@ -17,6 +17,7 @@ var usersMap = new Map();
 var gamesMap = new Map();
 var rooms = ['Lobby'];
 var pendingRooms = [];
+var gameTrackerMap = new Map();
 var roomCount = 0;
 
 // Middleware
@@ -46,10 +47,11 @@ io.on('connection', function(socket) {
     });
 
     socket.on('NEWGAME', function(game) {
-        if (game === "randomGame") {
+        if (game.gameType === "randomGame") {
             if (pendingRooms.length === 0) {
                 let randomRoomID = 'game' + Math.round(Math.random() * 100).toString();
                 pendingRooms.push(randomRoomID);
+                gameTrackerMap.set(randomRoomID,[game.user]);
                 socket.emit("setGameSession", { gameID: randomRoomID });
                 console.log("New room created: " + randomRoomID);
 
@@ -57,7 +59,7 @@ io.on('connection', function(socket) {
             }
             else {
                 console.log("New game started: " + pendingRooms[0]);
-
+                gameTrackerMap.get(pendingRooms[0]).push(game.user);
                 rooms.push(pendingRooms[0]);
                 socket.emit("setGameSession", { gameID: pendingRooms[0] });
                 socket.emit('PLAYERCOLOR', 'black');
@@ -71,6 +73,7 @@ io.on('connection', function(socket) {
 
     socket.on('LEAVEQUEUE', function() {
         pendingRooms.pop();
+        //gameTrackerMap.pop();
     });
 
     socket.on('INITGAME', function(gameRoom) {
@@ -89,21 +92,19 @@ io.on('connection', function(socket) {
 
     socket.on('LEAVEGAME', function() {
         socket.leave(gamesMap.get(socket.id));
-        io.to(gamesMap.get(socket.id)).emit('SHOWDISCONNECT', '');
+        let userList = gameTrackerMap.get(gamesMap.get(socket.id));
+        io.to(gamesMap.get(socket.id)).emit('SHOWDISCONNECT', { reason: 'leftGame', users: userList });
 
     });
 
     socket.on('disconnect', function() {
         let currentGameRoom = gamesMap.get(socket.id);
+        if (currentGameRoom !== undefined) {
+            let userList = gameTrackerMap.get(currentGameRoom);
+            io.to(currentGameRoom).emit('SHOWDISCONNECT', { reason: 'randomDisconnect', users: userList });
+        }
         gamesMap.delete(socket.id);
 
-        let gameRoomList = gamesMap.values();
-        for (let i = 0; i < gameRoomList.length; i++) {
-            console.log(gameRoomList[i]);
-            if (gameRoomList[i] === currentGameRoom) {
-                console.log(gameRoomList[i]);
-            }
-        }
         //console.log(socket.id);
         /*
         usersMap.delete(socket.id);

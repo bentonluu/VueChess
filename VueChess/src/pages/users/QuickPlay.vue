@@ -48,7 +48,8 @@ export default {
             this.isWaitModalVisible = true;
 
             // Creates new game room
-            this.socket.emit('NEWGAME', "randomGame");
+            let username = this.$cookies.get('username');
+            this.socket.emit('NEWGAME', { gameType: 'randomGame', user: username });
 
             // Sets the gameRoomID into browser storage
             this.socket.on('setGameSession', (data) => {

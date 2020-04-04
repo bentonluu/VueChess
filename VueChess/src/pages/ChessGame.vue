@@ -49,19 +49,22 @@
       window.addEventListener('resize', this.handleResize);
       this.handleResize();
 
+      // Gets the player's color for this game
       this.playerColor = sessionStorage.getItem('playerColor');
       console.log(this.playerColor);
-      let gameRoom = sessionStorage.getItem('gameRoomID');
 
       // Changes the players' sockets to be in the same room
+      let gameRoom = sessionStorage.getItem('gameRoomID');
       this.socket.emit('INITGAME', gameRoom);
 
+      // Used for chess logic to check for a checkmate or draw in the game
       this.game =  new Chess();
     },
     destroyed() {
       window.removeEventListener('resize', this.handleResize);
     },
     mounted() {
+      // Keeps tracks of all the moves both players have made and updates pieces after a player moved
       this.socket.on('UPDATEGAME', (game) => {
         this.checkGameEnd(game);
 
@@ -77,9 +80,16 @@
       });
 
       // If an opponent disconnects from game, current player wins the game
-      this.socket.on('SHOWDISCONNECT', () => {
+      this.socket.on('SHOWDISCONNECT', (message) => {
         let user = this.$cookies.get('username');
         UsersDB.incrementWins(user);
+        if (message.reason === 'randomDisconnect') {
+          message.users.forEach(player => {
+            if (player !== user) {
+              UsersDB.incrementLosses(player);
+            }
+          });
+        }
         console.log('disconnect by leaving');
         sessionStorage.setItem('playerColor', '');
         this.isDisconnectedModalVisible = true;
@@ -122,10 +132,16 @@
         this.isGameSettingsModalVisible = false;
       },
       leaveGame() {
+        // Resets the player's color
+        sessionStorage.setItem('playerColor', '');
+
+        // Gives the leaving player a lose in their record
         let user = this.$cookies.get('username');
         UsersDB.incrementLosses(user);
-        sessionStorage.setItem('playerColor', '');
+
         this.socket.emit('LEAVEGAME', '');
+
+        // Returns to the main menu
         this.$router.push('/');
       },
       returnMainMenu() {
