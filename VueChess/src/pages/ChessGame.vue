@@ -137,8 +137,9 @@
         this.isGameSettingsModalVisible = false;
       },
       leaveGame() {
-        // Resets the player's color
+        // Resets the player's color and game room
         sessionStorage.setItem('playerColor', '');
+        sessionStorage.setItem('gameRoomID', '');
 
         // Gives the leaving player a lose in their record
         let user = this.$cookies.get('username');

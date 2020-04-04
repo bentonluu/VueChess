@@ -7,7 +7,7 @@
             <div class="btn" v-on:click="showModal">Invite Friend</div>
         </div>
 
-        <modal v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
+        <modal :randomJoinCode="randomJoinCode" v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
         <waitModal v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
     </div>
@@ -31,18 +31,42 @@ export default {
             isModalVisible: false,
             isErrorModalVisible: false,
             isWaitModalVisible: false,
-            searchedUsername: "",
+            searchedUsername: '',
             socket: io('http://localhost:3000'),
+            randomJoinCode: '',
         }
     },
     created() {
+        this.randomJoinCode = this.generateRandomCode();
     },
     methods: {
         showModal() {
-            this.isModalVisible = true;
+          this.isModalVisible = true;
+
+          // Creates new game room
+          let username = this.$cookies.get('username');
+          this.socket.emit('NEWGAME', { gameType: 'inviteGame', user: username, joinCode: this.randomJoinCode });
+
+          sessionStorage.setItem('gameRoomID', this.randomJoinCode);
+
+          this.socket.on('PLAYERCOLOR', (color) => {
+            sessionStorage.setItem('playerColor', color);
+          });
+
+          this.socket.on('STARTGAME', (game) => {
+            // Will only start a chess game if player is in the same game
+            let gameID = sessionStorage.getItem('gameRoomID');
+            if (gameID === game) {
+              this.$router.push('/chessgame').catch(err => {});
+            }
+          });
         },
-        hideModal(un) {
+        hideModal() {
             this.isModalVisible = false;
+
+          sessionStorage.setItem('playerColor', '');
+          // Removes the currently pending random game from the queue
+          this.socket.emit('LEAVEQUEUE', sessionStorage.getItem('gameRoomID'));
         },
         showWaitModal() {
             this.isWaitModalVisible = true;
@@ -53,6 +77,10 @@ export default {
 
             // Sets the gameRoomID into browser storage
             this.socket.on('setGameSession', (data) => {
+              let gameRoomID = sessionStorage.getItem('gameRoomID');
+              if (gameRoomID !== ('' || null)) {
+                sessionStorage.setItem('gameRoomID', '');
+              }
               sessionStorage.setItem('gameRoomID', data.gameID);
             });
 
@@ -63,11 +91,14 @@ export default {
                 sessionStorage.setItem('playerColor', '');
               }
               sessionStorage.setItem('playerColor', color);
-
             });
 
-            this.socket.on('STARTGAME', () => {
-              this.$router.push('/chessgame').catch(err => {});
+            this.socket.on('STARTGAME', (game) => {
+              // Will only start a chess game if player is in the same game
+              let gameID = sessionStorage.getItem('gameRoomID');
+              if (gameID === game) {
+                this.$router.push('/chessgame').catch(err => {});
+              }
             });
         },
         hideWaitModal() {
@@ -82,9 +113,29 @@ export default {
         hideErrorModal() {
             this.isErrorModalVisible = false;
         },
-        submit(un) {
-            this.searchedUsername = un;
-            this.isModalVisible = false;
+        submit(joinCode) {
+            console.log(joinCode);
+
+            sessionStorage.setItem('gameRoomID', joinCode);
+            let username = this.$cookies.get('username');
+            this.socket.emit('JOINGAME', { code: joinCode, user: username });
+
+            this.socket.on('PLAYERCOLOR', (color) => {
+              sessionStorage.setItem('playerColor', color);
+            });
+
+            //this.isModalVisible = false;
+        },
+        generateRandomCode() {
+          let code = '';
+          let randomString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789' + 'abcdefghijklmnopqrstuvxyz';
+
+          for (let i = 0; i < 10; i++) {
+            let index = (randomString.length * Math.random());
+            code = code + randomString.charAt(index);
+          }
+          console.log(code);
+          return code;
         }
     }
 }

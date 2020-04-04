@@ -13,11 +13,17 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-var usersMap = new Map();
+// Key = socket.id | Value = gameRoomID
 var gamesMap = new Map();
+// Key = gameRoomID | Value = [player usernames]
+var gameTrackerMap = new Map();
+// Key = inviteJoinCode | Value = [player usernames]
+var inviteGameMap = new Map();
+
+var usersMap = new Map();
 var rooms = ['Lobby'];
 var pendingRooms = [];
-var gameTrackerMap = new Map();
+
 var roomCount = 0;
 
 // Middleware
@@ -47,7 +53,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('NEWGAME', function(game) {
-        if (game.gameType === "randomGame") {
+        if (game.gameType === 'randomGame') {
             if (pendingRooms.length === 0) {
                 let randomRoomID = 'game' + Math.round(Math.random() * 100).toString();
                 pendingRooms.push(randomRoomID);
@@ -61,19 +67,35 @@ io.on('connection', function(socket) {
                 console.log("New game started: " + pendingRooms[0]);
                 gameTrackerMap.get(pendingRooms[0]).push(game.user);
                 rooms.push(pendingRooms[0]);
-                socket.emit("setGameSession", { gameID: pendingRooms[0] });
+                socket.emit("setGameSession", { gameID: pendingRooms[0], startGame: true });
                 socket.emit('PLAYERCOLOR', 'black');
-
-                io.emit('STARTGAME','');
+                io.emit('STARTGAME', pendingRooms[0]);
 
                 pendingRooms.pop();
             }
         }
+        else if (game.gameType === 'inviteGame') {
+            if (inviteGameMap.get(game.joinCode) === undefined) {
+                inviteGameMap.set(game.joinCode, [game.user]);
+                socket.emit('PLAYERCOLOR', 'white');
+            }
+        }
+    });
+
+    socket.on('JOINGAME', function(gameInfo) {
+        console.log(gameInfo.code);
+        inviteGameMap.get(gameInfo.code).push(gameInfo.user);
+        socket.emit('PLAYERCOLOR', 'black');
+        io.emit('STARTGAME', gameInfo.code);
+
+        console.log(inviteGameMap.get(gameInfo.code));
+
     });
 
     socket.on('LEAVEQUEUE', function(gameID) {
         pendingRooms.pop();
         gameTrackerMap.delete(gameID);
+        inviteGameMap.delete(gameID);
     });
 
     socket.on('INITGAME', function(gameRoom) {
@@ -81,7 +103,14 @@ io.on('connection', function(socket) {
         socket.join(gameRoom);
         console.log('room: ' + gameRoom);
 
-        io.emit('USERLIST', gameTrackerMap.get(gameRoom));
+        if (gameRoom.length < 8) {
+            // Sending username list for a random game and tournament game
+            io.emit('USERLIST', gameTrackerMap.get(gameRoom));
+        }
+        else {
+            // Sending username list for a invited game
+            io.emit('USERLIST', inviteGameMap.get(gameRoom));
+        }
     });
 
     socket.on('PIECEMOVED', function(game) {
@@ -93,16 +122,23 @@ io.on('connection', function(socket) {
     });
 
     socket.on('LEAVEGAME', function() {
-        socket.leave(gamesMap.get(socket.id));
+        console.log('LEAVE GAME' + gamesMap.get(socket.id));
+
         let userList = gameTrackerMap.get(gamesMap.get(socket.id));
         io.to(gamesMap.get(socket.id)).emit('SHOWDISCONNECT', { reason: 'leftGame', users: userList });
-
+        socket.leave(gamesMap.get(socket.id));
     });
 
     socket.on('disconnect', function() {
         let currentGameRoom = gamesMap.get(socket.id);
         if (currentGameRoom !== undefined) {
-            let userList = gameTrackerMap.get(currentGameRoom);
+            let userList = '';
+            if (currentGameRoom.length < 8) {
+                userList = gameTrackerMap.get(currentGameRoom);
+            }
+            else {
+                userList = inviteGameMap.get(currentGameRoom);
+            }
             io.to(currentGameRoom).emit('SHOWDISCONNECT', { reason: 'randomDisconnect', users: userList });
         }
         gamesMap.delete(socket.id);
@@ -113,7 +149,7 @@ io.on('connection', function(socket) {
         socket.leave(socket.room);
         io.emit('USERLIST', Array.from(usersMap.values()));
         */
-        console.log("user left");
+        //console.log("user left");
         roomCount--;
     });
 
@@ -149,8 +185,6 @@ io.on('connection', function(socket) {
             console.log("room full");
         }
     });
-
-
 });
 
 const port = process.env.PORT || 9000

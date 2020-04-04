@@ -40,11 +40,12 @@
       }
     },
     props: {
-      currentFenString: String,
       // Assigned player color at start of game
       playerColor: String,
       // Current player color move
       currentColor: String,
+
+      currentFenString: String,
       endState: String,
       playerList: Array,
     },
@@ -62,6 +63,7 @@
         this.isEndGameModalVisible = true;
       },
       returnToMainMenu() {
+        sessionStorage.setItem('gameRoomID', '');
         this.$router.replace('/');
       },
     },
