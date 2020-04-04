@@ -3,10 +3,10 @@
     <div class="gridContainer">
       <div class="chessGameColumn">
         <div v-if="playerColor === 'white'">
-          <Chessboard :key="windowResize" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
+          <Chessboard :key="windowResize" :playerList="playerList" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
         </div>
         <div v-else>
-          <Chessboard :key="windowResize" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
+          <Chessboard :key="windowResize" :playerList="playerList" :endState="endState" :currentFenString="currentFenString" :currentColor="currentColor" :playerColor="playerColor" v-on:positionInfo="updatePositionInfo"/>
         </div>
       </div>
       <div class="secondColumn divider">
@@ -43,6 +43,7 @@
         endState: '',
         isGameSettingsModalVisible: false,
         isDisconnectedModalVisible: false,
+        playerList: [],
       }
     },
     created() {
@@ -56,6 +57,10 @@
       // Changes the players' sockets to be in the same room
       let gameRoom = sessionStorage.getItem('gameRoomID');
       this.socket.emit('INITGAME', gameRoom);
+
+      this.socket.on('USERLIST', (userList) => {
+        this.playerList = userList;
+      });
 
       // Used for chess logic to check for a checkmate or draw in the game
       this.game =  new Chess();

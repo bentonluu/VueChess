@@ -1,19 +1,21 @@
 <template>
   <div id="chessboard">
-    <span class="playerName playerBlack">{{ playerBlack }}</span>
     <div v-if="playerColor === 'white'">
       <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[1]">
+        <span class="playerName playerBlack">{{ playerList[1] }}</span>
         <chessboard class="cg-board-wrap" :fen="currentFenString" @onMove="showInfo"/>
         <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <span class="playerName playerWhite">{{ playerList[0] }}</span>
       </div>
     </div>
     <div v-else>
       <div :class="chessboardLayerBlack ? chessboardLayer[1] : chessboardLayer[0]">
+        <span class="playerName playerWhite">{{ playerList[0] }}</span>
         <chessboard class="cg-board-wrap" orientation="black" :fen="currentFenString" @onMove="showInfo"/>
         <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <span class="playerName playerBlack">{{ playerList[1] }}</span>
       </div>
     </div>
-    <span class="playerName playerWhite">{{ playerWhite }}</span>
   </div>
 </template>
 
@@ -44,6 +46,7 @@
       // Current player color move
       currentColor: String,
       endState: String,
+      playerList: Array,
     },
     components: {
       chessboard,
@@ -132,13 +135,12 @@
 
   .playerBlack {
     margin-bottom: 20px;
-    color: coral;
     margin-top: 2vh;
   }
 
   .playerWhite {
     margin-top: 20px;
-/*    margin-bottom: 10px;*/
+    color: coral;
   }
 
   @media (min-height: 600px) and (min-width: 1100px) {

@@ -74,7 +74,7 @@ export default {
           this.isWaitModalVisible = false;
           sessionStorage.setItem('playerColor', '');
           // Removes the currently pending random game from the queue
-          this.socket.emit('LEAVEQUEUE', '');
+          this.socket.emit('LEAVEQUEUE', sessionStorage.getItem('gameRoomID'));
         },
         showErrorModal() {
             this.isErrorModalVisible = true;

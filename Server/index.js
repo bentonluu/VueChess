@@ -71,15 +71,17 @@ io.on('connection', function(socket) {
         }
     });
 
-    socket.on('LEAVEQUEUE', function() {
+    socket.on('LEAVEQUEUE', function(gameID) {
         pendingRooms.pop();
-        //gameTrackerMap.pop();
+        gameTrackerMap.delete(gameID);
     });
 
     socket.on('INITGAME', function(gameRoom) {
         gamesMap.set(socket.id, gameRoom);
         socket.join(gameRoom);
         console.log('room: ' + gameRoom);
+
+        io.emit('USERLIST', gameTrackerMap.get(gameRoom));
     });
 
     socket.on('PIECEMOVED', function(game) {
