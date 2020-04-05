@@ -95,6 +95,7 @@ io.on('connection', function(socket) {
 
                 var playerPairsList = shufflePlayersList(data)
                 console.log(playerPairsList)
+                console.log(tournamentsMap.get(data.tournamentID))
 
                 playerPairsList.forEach (sessionIDPair => {
                     console.log(sessionIDPair)
@@ -108,8 +109,10 @@ io.on('connection', function(socket) {
     })
 
     socket.on('winTournament', function(tournamentPlayerInfo) {
+        
         var newShuffledPlayersList = shufflePlayersList(tournamentPlayerInfo)
         console.log(newShuffledPlayersList)
+        console.log("players left in tournament" + newShuffledPlayersList.length)
         if (newShuffledPlayersList.length == 1) {
             tournamentsMap.delete(tournamentPlayerInfo.tournamentID)
             socket.emit("wonEntireTournament")
@@ -119,7 +122,7 @@ io.on('connection', function(socket) {
             var gameID = 'game' + Math.round(Math.random() * 100).toString();
             var colors = ["black", "white"]
             io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors})
-            io.emit("STARTGAME", playerPairsList)
+            io.emit("STARTGAME", newShuffledPlayersList)
         } else {
 
             newShuffledPlayersList.forEach (sessionIDPair => {
@@ -134,7 +137,8 @@ io.on('connection', function(socket) {
     })
 
     socket.on('loseTournament', function(tournamentPlayerInfo) {
-        console.log("removed")
+        console.log("removed:" + tournamentPlayerInfo.sessionId)
+        console.log("tournamentID:" + tournamentPlayerInfo.tournamentID)
         removeValue(tournamentPlayerInfo.tournamentID, tournamentPlayerInfo.sessionId)
         console.log(tournamentsMap.get(tournamentPlayerInfo.tournamentID))
     })
@@ -219,7 +223,7 @@ function addValue(key, value) {
 
 function removeValue(key, value) {
     var indexOfValue = tournamentsMap.get(key).indexOf(value);
-    tournamentsMap.get(key).splice(indexOfValue);
+    tournamentsMap.get(key).splice(indexOfValue, indexOfValue);
 }
 
 function shufflePlayersList(data) {
@@ -228,12 +232,8 @@ function shufflePlayersList(data) {
     var tournamentGroups = data.maxPlayers / 2
     var playerPairsList = []
 
-    if (shuffledSessionList.length > 2) {
-        while(shuffledSessionList.length > 0) {
-            playerPairsList.push(shuffledSessionList.splice(0, tournamentGroups))
-        }
-    } else {
-        playerPairsList = shuffledSessionList;
+    for(var i =0; i < shuffledSessionList.length; i += tournamentGroups){
+        playerPairsList.push(shuffledSessionList.slice(i, i+tournamentGroups))
     }
 
     return playerPairsList
