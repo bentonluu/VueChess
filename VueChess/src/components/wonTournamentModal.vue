@@ -2,16 +2,11 @@
     <div class="modal-backdrop">
         <div class="modal">
             <section class="body">
-                <div>Your random game code:</div>
-                <div><span class="code">{{ generateRandomCode() }}</span></div>
-                <br>
-                <div>Join a game (enter game code below)</div>
-                <input v-model="username" type="text">
+                <div>You Won The Tournament</div>
             </section>
 
             <footer class="footer">
                 <div class="btn" v-on:click="close">Close</div>
-                <div class="btn" v-on:click="submit">Join</div>
             </footer>
         </div>
     </div>
@@ -19,30 +14,14 @@
 
 <script>
 export default {
-    name: 'modal',
+    name: 'wonTournamentModal',
     data () {
         return {
-            username: '',
         }
     },
     methods: {
         close() {
             this.$emit('close');
-        },
-        submit() {
-            this.$emit('submit', this.username);
-            this.username = '';
-        },
-        generateRandomCode() {
-            let code = '';
-            let randomString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789' + 'abcdefghijklmnopqrstuvxyz';
-
-            for (let i = 0; i < 10; i++) {
-              let index = (randomString.length * Math.random());
-              code = code + randomString.charAt(index);
-            }
-            console.log(code);
-            return code;
         }
     },
 }

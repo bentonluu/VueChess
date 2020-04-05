@@ -2,15 +2,17 @@
   <div id="chessboard">
     <span class="playerName playerBlack">{{ playerBlack }}</span>
     <div v-if="playerColor === 'white'">
-      <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[0]">
+      <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[1]">
         <chessboard class="cg-board-wrap" :fen="currentFenString" @onMove="showInfo"/>
-        <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>
+        <wonTournament v-show="isWonTournamentVisible" @close="hideWonTournament"></wonTournament>
       </div>
     </div>
     <div v-else>
       <div :class="chessboardLayerBlack ? chessboardLayer[1] : chessboardLayer[0]">
         <chessboard class="cg-board-wrap" orientation="black" :fen="currentFenString" @onMove="showInfo"/>
-        <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>
+        <wonTournament v-show="isWonTournamentVisible" @close="hideWonTournament"></wonTournament>
       </div>
     </div>
     <span class="playerName playerWhite">{{ playerWhite }}</span>
@@ -21,6 +23,9 @@
   import { chessboard } from 'vue-chessboard'
   import 'vue-chessboard/dist/vue-chessboard.css'
   import endGameModal from "./endGameModal";
+  import wonTournament from './wonTournamentModal'
+  import TournamentsDB from "../TournamentsDB";
+  import io from 'socket.io-client';
 
   export default {
     name: "Chessboard",
@@ -33,8 +38,10 @@
         chessboardLayerWhite: true,
         chessboardLayerBlack: false,
         isEndGameModalVisible: false,
+        isWonTournamentVisible: false,
         blackEndState: '',
         whiteEndState: '',
+        socket: io('http://localhost:3000'),
       }
     },
     props: {
@@ -47,7 +54,8 @@
     },
     components: {
       chessboard,
-      endGameModal
+      endGameModal,
+      wonTournament
     },
     methods: {
       showInfo(data) {
@@ -58,11 +66,73 @@
       showEndGameModal() {
         this.isEndGameModalVisible = true;
       },
-      returnToMainMenu() {
-        this.$router.replace('/');
+      async navigateAway() {
+        this.isEndGameModalVisible = false
+
+        if (this.whiteEndState === 'LOST' || this.blackEndState === 'LOST') {
+          this.lose()
+        } else if (this.blackEndState === 'WON' || this.whiteEndState === 'WON') {
+          let a = await this.win()
+        }
+
+        this.nav()
       },
+      nav() {
+        var tournamentId = sessionStorage.getItem('tournamentId');
+        if (tournamentId != null) {
+          this.$router.replace('/tournament')
+        } else {
+          this.$router.replace('/');
+        }
+      },
+      win () {
+        // Retrieve sessionId of player who won and send a win event to socket for tournament
+        return new Promise(function(res, rej) {
+          console.log("in test")
+          var tournamentId = sessionStorage.getItem('tournamentId');
+          var maxPlayers = 0;
+          TournamentsDB.getTournament(tournamentId).then(res => {
+            console.log("tournament info:" + res)
+            maxPlayers = res.maxPlyers
+          })
+
+          if (tournamentId != null) {
+            var sessionId = sessionStorage.getItem('sessionId');
+            var tournamentPlayerInfo = {
+              sessionId: sessionId,
+              tournamentID: tournamentId,
+              maxPlayers: maxPlayers
+            }
+            this.socket.emit("winTournament", tournamentPlayerInfo)
+          }
+        })
+      },
+      lose () {
+        // Retrieve sessionId of player who lost and send a lose event to socket for tournament
+        var tournamentId = sessionStorage.getItem('tournamentId');
+        if (tournamentId != null) {
+          var sessionId = sessionStorage.getItem('sessionId');
+          var tournamentPlayerInfo = {
+            sessionId: sessionId,
+            tournamentID: tournamentId
+          }
+          sessionStorage.removeItem('tournamentId')
+          sessionStorage.removeItem('gameRoomID')
+          this.socket.emit("loseTournament", tournamentPlayerInfo)
+        }
+      },
+      hideWonTournament () {
+        sessionStorage.removeItem("tournamentId")
+        sessionStorage.removeItem("gameRoomID")
+        this.isWonTournamentVisible = false
+      }
     },
     created() {
+    },
+    mounted() {
+      this.socket.on("wonEntireTournament", () => {
+        this.isWonTournamentVisible = true
+      });
     },
     watch: {
       // Enables or disables the corresponding player's chessboard when the currentPlayerMove changes
@@ -123,59 +193,64 @@
   }
 
   .playerName {
-    padding: 15px;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
-    color: white;
-    background: coral;
-    border-radius: 50px;
     min-width: 120px;
     display: inline-block;
     text-align: center;
   }
 
   .playerBlack {
-    margin-top: 10px;
     margin-bottom: 20px;
+    color: coral;
+    margin-top: 2vh;
   }
 
   .playerWhite {
-    margin-top: 25px;
-    margin-bottom: 10px;
+    margin-top: 20px;
+/*    margin-bottom: 10px;*/
   }
 
-  @media (min-height: 400px) and (min-width: 750px) {
+  @media (min-height: 600px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 320px;
-      width: 320px;
+      height: 410px;
+      width: 410px;
     }
   }
-
-  @media (min-height: 500px) and (min-width: 850px) {
+  @media (min-height: 650px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 420px;
-      width: 420px;
+      height: 430px;
+      width: 430px;
     }
   }
-
-  @media (min-height: 600px) and (min-width: 950px) {
+  @media (min-height: 700px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 520px;
-      width: 520px;
+      height: 440px;
+      width: 440px;
     }
   }
-
-  @media (min-height: 700px) and (min-width: 1050px) {
+  @media (min-height: 750px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 620px;
-      width: 620px;
+      height: 490px;
+      width: 490px;
     }
   }
-
-  @media (min-height: 900px) and (min-width: 1250px) {
+  @media (min-height: 800px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 730px;
-      width: 730px;
+      height: 590px;
+      width: 590px;
+    }
+  }
+  @media (min-height: 850px) and (min-width: 1100px) {
+    .cg-board-wrap {
+      height: 630px;
+      width: 630px;
+    }
+  }
+  @media (min-height: 900px) and (min-width: 1100px) {
+    .cg-board-wrap {
+      height: 680px;
+      width: 680px;
     }
   }
 </style>

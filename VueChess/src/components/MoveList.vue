@@ -2,13 +2,13 @@
   <div>
     <div id="tableMoveList">
       <table>
-        <tr>
+        <tr class="headerLayer">
           <th>Move #</th>
           <th>Player</th>
           <th>Move</th>
         </tr>
 
-        <tr v-for="(position, index) in positionMoveList" v-if="index != 0" :key="index">
+        <tr class="bodyLayer" v-for="(position, index) in positionMoveList" v-if="index != 0" :key="index">
           <td> {{ index }}</td>
           <td> {{ position.color }}</td>
           <td> {{ position.move[0] }}</td>
@@ -46,16 +46,17 @@
 </script>
 
 <style scoped>
-  table, th, td {
-    border: 2px solid black;
-    text-align: center;
-    padding: 10px;
-    font-size: 20px;
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin:  auto;
   }
 
-  table {
-    border-collapse: collapse;
-    margin: 0 auto;
+  th, td {
+    text-align: center;
+    padding: 15px;
+    font-size: 20px;
+    border-bottom: 2px solid lightgray;
   }
 
   th {
@@ -68,4 +69,19 @@
     font-weight: bold;
     color: white;
   }
+
+  table tr:first-child th:first-child {
+    border-top-left-radius: 8px;
+    padding-left: 30px;
+  }
+
+  table tr:first-child th:last-child {
+    border-top-right-radius: 8px;
+    padding-right: 30px;
+  }
+
+  table tr:last-child td {
+    border: none;
+  }
+
 </style>

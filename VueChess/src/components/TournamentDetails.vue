@@ -95,6 +95,12 @@ export default {
 
                 sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
 
+                // Sets the gameRoomID into browser storage
+                console.log("sessions for tourn game:" + data.sessionIds)
+                if (data.sessionIDs.includes(sessionId)) {
+                    sessionStorage.setItem('gameRoomID', data.gameID);
+                }
+
                 this.socket.on('STARTGAME', (data) => {
                     console.log(data)
                     if (data.includes(sessionId)) {

@@ -25,7 +25,6 @@
 
         <tournamentDetails v-bind:tournamentInfo="tournament" v-bind:disable="disable" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
         <manageTournament :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
-
     </div>
 </template>
 

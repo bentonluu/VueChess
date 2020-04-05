@@ -15,6 +15,7 @@ app.get('/', function(req, res) {
 
 var usersMap = new Map();
 var tournamentsMap = new Map();
+var gamesMap = new Map();
 var rooms = ['Lobby'];
 var pendingRooms = [];
 var roomCount = 0;
@@ -79,38 +80,63 @@ io.on('connection', function(socket) {
             addValue(data.tournamentID, data.sessionID)
             socket.emit("setTournament", {tournamentID: data.tournamentID})
         } 
-        
+        console.log("tournament size: " + tournamentsMap.get(data.tournamentID).length)
         if (tournamentsMap.get(data.tournamentID).length == data.maxPlayers) {
             console.log("Tournament lobby is full")
-            var sessionIDsInTournament = tournamentsMap.get(data.tournamentID)
-            var shuffledSessionList = sessionIDsInTournament.sort(() => 0.5 - Math.random())
-            var tournamentGroups = data.maxPlayers / 2
-            var test = []
+            console.log(tournamentsMap.get(data.tournamentID))
 
-            if (shuffledSessionList.length > 2) {
-                while(shuffledSessionList.length > 0) {
-                    test.push(shuffledSessionList.splice(0, tournamentGroups))
-                }
-            } else {
-                test = shuffledSessionList;
-            }
-            
-            console.log(test)
-            if (test.length == 2) {
+            if (tournamentsMap.get(data.tournamentID).length == 2) {
                 var gameID = 'game' + Math.round(Math.random() * 100).toString();
                 var colors = ["black", "white"]
-                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: test, colors: colors})
+                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: tournamentsMap.get(data.tournamentID), colors: colors})
+                io.emit("STARTGAME", tournamentsMap.get(data.tournamentID))
+
             } else {
 
-                test.forEach (sessionIDPair => {
+                var playerPairsList = shufflePlayersList(data)
+                console.log(playerPairsList)
+
+                playerPairsList.forEach (sessionIDPair => {
+                    console.log(sessionIDPair)
                     var gameID = 'game' + Math.round(Math.random() * 100).toString();
                     var colors = ["black", "white"]
                     io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors})
+                    io.emit("STARTGAME", sessionIDPair)
                 });
             }
-            io.emit("STARTGAME", test)
         }
-        tournamentsMap.delete(data.tournamentID)
+    })
+
+    socket.on('winTournament', function(tournamentPlayerInfo) {
+        var newShuffledPlayersList = shufflePlayersList(tournamentPlayerInfo)
+        console.log(newShuffledPlayersList)
+        if (newShuffledPlayersList.length == 1) {
+            tournamentsMap.delete(tournamentPlayerInfo.tournamentID)
+            socket.emit("wonEntireTournament")
+        }
+
+        if (newShuffledPlayersList.length == 2) {
+            var gameID = 'game' + Math.round(Math.random() * 100).toString();
+            var colors = ["black", "white"]
+            io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors})
+            io.emit("STARTGAME", playerPairsList)
+        } else {
+
+            newShuffledPlayersList.forEach (sessionIDPair => {
+                var gameID = 'game' + Math.round(Math.random() * 100).toString();
+                var colors = ["black", "white"]
+                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors})
+                io.emit("STARTGAME", sessionIDPair)
+            });
+        }
+
+        console.log("New tournament player list: " + newShuffledPlayersList)
+    })
+
+    socket.on('loseTournament', function(tournamentPlayerInfo) {
+        console.log("removed")
+        removeValue(tournamentPlayerInfo.tournamentID, tournamentPlayerInfo.sessionId)
+        console.log(tournamentsMap.get(tournamentPlayerInfo.tournamentID))
     })
 
     socket.on('LEAVEQUEUE', function() {
@@ -118,6 +144,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('INITGAME', function(gameRoom) {
+        gamesMap.set(socket.id, gameRoom);
         socket.join(gameRoom);
         console.log('room: ' + gameRoom);
     });
@@ -130,10 +157,29 @@ io.on('connection', function(socket) {
         io.to(game.gameRoomID).emit('UPDATEGAME', { position: game.gamePosition, color: game.color, history: game.gameHistory });
     });
 
+    socket.on('LEAVEGAME', function() {
+        socket.leave(gamesMap.get(socket.id));
+        io.to(gamesMap.get(socket.id)).emit('SHOWDISCONNECT', '');
+
+    });
+
     socket.on('disconnect', function() {
+        let currentGameRoom = gamesMap.get(socket.id);
+        gamesMap.delete(socket.id);
+
+        let gameRoomList = gamesMap.values();
+        for (let i = 0; i < gameRoomList.length; i++) {
+            console.log(gameRoomList[i]);
+            if (gameRoomList[i] === currentGameRoom) {
+                console.log(gameRoomList[i]);
+            }
+        }
+        //console.log(socket.id);
+        /*
         usersMap.delete(socket.id);
         socket.leave(socket.room);
         io.emit('USERLIST', Array.from(usersMap.values()));
+        */
         console.log("user left");
         roomCount--;
     });
@@ -167,9 +213,30 @@ io.on('connection', function(socket) {
 });
 
 function addValue(key, value) {
+    tournamentsMap.set(key, tournamentsMap.get(key)|| []);
+    tournamentsMap.get(key).push(value)
+}
 
-    tournamentsMap.set(key, tournamentsMap.get(key) || []);
-    tournamentsMap.get(key).push(value);
+function removeValue(key, value) {
+    var indexOfValue = tournamentsMap.get(key).indexOf(value);
+    tournamentsMap.get(key).splice(indexOfValue);
+}
+
+function shufflePlayersList(data) {
+    var sessionIDsInTournament = tournamentsMap.get(data.tournamentID)
+    var shuffledSessionList = sessionIDsInTournament.sort(() => 0.5 - Math.random())
+    var tournamentGroups = data.maxPlayers / 2
+    var playerPairsList = []
+
+    if (shuffledSessionList.length > 2) {
+        while(shuffledSessionList.length > 0) {
+            playerPairsList.push(shuffledSessionList.splice(0, tournamentGroups))
+        }
+    } else {
+        playerPairsList = shuffledSessionList;
+    }
+
+    return playerPairsList
 }
 
 const port = process.env.PORT || 9000

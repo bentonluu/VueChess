@@ -25,10 +25,14 @@
 </template>
 
 <script>
+  import io from 'socket.io-client';
+  import UsersDB from "../UsersDB";
+  import TournamentsDB from "../TournamentsDB";
   export default {
     name: 'endGameModal',
     data () {
       return {
+        socket: io('http://localhost:3000'),
       }
     },
     props: {
@@ -40,6 +44,68 @@
       close() {
         this.$emit('close');
       },
+      wonGame(username) {
+        UsersDB.incrementWins(username);
+        sessionStorage.setItem('playerColor', '');
+        this.$emit('won');
+        // Retrieve sessionId of player who won and send a win event to socket for tournament
+        // var tournamentId = sessionStorage.getItem('tournamentId');
+        // var maxPlayers = 0;
+        // TournamentsDB.getTournament(tournamentId).then(res => {
+        //   maxPlayers = res.maxPlyers
+        // })
+
+        // if (tournamentId != null) {
+        //   var sessionId = sessionStorage.getItem('sessionId');
+        //   var tournamentPlayerInfo = {
+        //     sessionId: sessionId,
+        //     tournamentID: tournamentId,
+        //     maxPlayers: maxPlayers
+        //   }
+        //   this.socket.emit("winTournament", tournamentPlayerInfo)
+        // }
+      },
+      lostGame(username) {
+        console.log("in lost game method")
+        UsersDB.incrementLosses(username);
+        sessionStorage.setItem('playerColor', '');
+
+        // Retrieve sessionId of player who lost and send a lose event to socket for tournament
+        // var tournamentId = sessionStorage.getItem('tournamentId');
+        // if (tournamentId != null) {
+        //   var sessionId = sessionStorage.getItem('sessionId');
+        //   var tournamentPlayerInfo = {
+        //     sessionId: sessionId,
+        //     tournamentID: tournamentId
+        //   }
+        //   sessionStorage.removeItem('tournamentId')
+        //   this.socket.emit("loseTournament", tournamentPlayerInfo)
+        // }
+      }
+    },
+    watch: {
+      whiteEndState: function() {
+        let user = this.$cookies.get('username');
+        if (this.whiteEndState === 'WON') {
+          this.wonGame(user);
+          console.log('white WON');
+        }
+        else if (this.whiteEndState === 'LOST') {
+          this.lostGame(user);
+          console.log('white LOST');
+        }
+      },
+      blackEndState: function() {
+        let user = this.$cookies.get('username');
+        if (this.blackEndState === 'WON') {
+          this.wonGame(user);
+          console.log('black WON');
+        }
+        else if (this.blackEndState === 'LOST') {
+          this.lostGame(user);
+          console.log('black LOST');
+        }
+      }
     }
   }
 </script>
