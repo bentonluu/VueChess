@@ -75,7 +75,6 @@ export default {
                 console.log("Tournament ID: " + data.tournamentID);
                 sessionStorage.setItem('tournamentId', data.tournamentID);
             });
-            this.disable = true
         }
     },
     created() {
@@ -84,10 +83,6 @@ export default {
         } 
     },
     mounted() {
-
-        this.socket.on("showTournamentModal", (data) => {
-            console.log(data.usersInTournament)
-        })
 
         this.socket.on("startTournamentGame", (data) => {
             console.log(data)

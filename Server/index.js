@@ -123,18 +123,16 @@ io.on('connection', function(socket) {
         console.log("players left in tournament" + newShuffledPlayersList.length)
         if (newShuffledPlayersList.length == 1) {
             tournamentsMap.delete(tournamentInfo.tournamentID)
+            console.log("tourmanet map size: " + tournamentsMap.size)
             checkedIn = 0;
             socket.emit("wonEntireTournament")
-        }
-
-        if (newShuffledPlayersList.length == 2) {
+        } else if (newShuffledPlayersList.length == 2) {
             if (checkedIn == 2) {
-                console.log("start new game")
-            var gameID = 'game' + Math.round(Math.random() * 100).toString();
-            var colors = ["black", "white"]
-            io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors,
-                maxPlayers: tournamentInfo.maxPlayers})
-            io.emit("STARTGAME", newShuffledPlayersList)
+                var gameID = 'game' + Math.round(Math.random() * 100).toString();
+                var colors = ["black", "white"]
+                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors,
+                    maxPlayers: tournamentInfo.maxPlayers})
+                io.emit("STARTGAME", newShuffledPlayersList)
             }
         } else if (newShuffledPlayersList.length > 2) {
 
