@@ -31,16 +31,16 @@ export default {
 
     },
     toQuickPlay(){
-      this.$router.replace('quickPlay')
+      this.$router.push('quickPlay')
     },
     toTournament(){
-      this.$router.replace('tournament')
+      this.$router.push('tournament')
     },
     toLeaderboards(){
-      this.$router.replace('leaderboards')
+      this.$router.push('leaderboards')
     },
     toUnlockables(){
-      this.$router.replace('unlockables')
+      this.$router.push('unlockables')
     }
   },
   created() {

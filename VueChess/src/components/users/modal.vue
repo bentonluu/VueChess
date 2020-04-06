@@ -3,15 +3,15 @@
         <div class="modal">
             <section class="body">
                 <div>Your random game code:</div>
-                <div><span class="code">{{ generateRandomCode() }}</span></div>
+                <div><span class="code">{{ randomJoinCode }}</span></div>
                 <br>
                 <div>Join a game (enter game code below)</div>
-                <input v-model="username" type="text">
+                <input v-model="joinCode" type="text">
             </section>
 
             <footer class="footer">
-                <div class="btn" v-on:click="close">Close</div>
                 <div class="btn" v-on:click="submit">Join</div>
+                <div class="btn" v-on:click="close">Close</div>
             </footer>
         </div>
     </div>
@@ -22,7 +22,7 @@ export default {
     name: 'modal',
     data () {
         return {
-            username: '',
+            joinCode: '',
         }
     },
     methods: {
@@ -30,21 +30,14 @@ export default {
             this.$emit('close');
         },
         submit() {
-            this.$emit('submit', this.username);
-            this.username = '';
+            console.log(this.joinCode);
+            this.$emit('submit', this.joinCode);
+            this.joinCode = '';
         },
-        generateRandomCode() {
-            let code = '';
-            let randomString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789' + 'abcdefghijklmnopqrstuvxyz';
-
-            for (let i = 0; i < 10; i++) {
-              let index = (randomString.length * Math.random());
-              code = code + randomString.charAt(index);
-            }
-            console.log(code);
-            return code;
-        }
     },
+    props: {
+        randomJoinCode: String,
+    }
 }
 </script>
 

@@ -57,7 +57,7 @@
         },
         methods: {
             toMainPage() {
-                this.$router.replace('/')
+                this.$router.push('/')
             },
             createNewTournament() {
                 this.isTournamentManagerVisible = true;

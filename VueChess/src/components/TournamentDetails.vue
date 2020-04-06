@@ -96,13 +96,18 @@ export default {
                 // Sets the gameRoomID into browser storage
                 console.log("sessions for tourn game:" + data.sessionIds)
                 if (data.sessionIDs.includes(sessionId)) {
+                    let gameRoomID = sessionStorage.getItem('gameRoomID');
+                    if (gameRoomID !== ('' || null)) {
+                        sessionStorage.setItem('gameRoomID', '');
+                    }
                     sessionStorage.setItem('gameRoomID', data.gameID);
                 }
 
-                this.socket.on('STARTGAME', (data) => {
-                    console.log(data)
-                    if (data.includes(sessionId)) {
-                        this.$router.replace('/chessgame');
+                this.socket.on('STARTGAME', (game) => {
+                // Will only start a chess game if player is in the same game
+                    let gameID = sessionStorage.getItem('gameRoomID');
+                    if (gameID === game) {
+                        this.$router.push('/chessgame').catch(err => {});
                     }
                 });
             }
