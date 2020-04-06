@@ -75,6 +75,7 @@ export default {
                 console.log("Tournament ID: " + data.tournamentID);
                 sessionStorage.setItem('tournamentId', data.tournamentID);
             });
+            this.disable = true
         }
     },
     created() {
@@ -95,6 +96,7 @@ export default {
 
                 sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
                 sessionStorage.setItem('maxPlayers', data.maxPlayers)
+                sessionStorage.setItem('tournamentGamePlayers', JSON.stringify(data.sessionIDs))
 
                 // Sets the gameRoomID into browser storage
                 console.log("sessions for tourn game:" + data.sessionIds)

@@ -71,58 +71,49 @@
 
         if (this.playerColor === "white") {
           if (this.whiteEndState === "WON") {
-            this.win()
+            this.updateTournament()
           } else {
-            this.lose()
+            this.removeSessionStorageItems()
+            this.$router.replace('/');
           }
         } else {
           if (this.blackEndState === "WON") {
-            this.win()
+            this.updateTournament()
           } else {
-            this.lose()
+            this.removeSessionStorageItems()
+            this.$router.replace('/');
           }
         }
-
-        var tournamentId = sessionStorage.getItem('tournamentId');
-        if (tournamentId == null) {
-          this.$router.replace('/');
-        }
       },
-      win () {
-        // Retrieve sessionId of player who won and send a win event to socket for tournament
-          var tournamentId = sessionStorage.getItem('tournamentId');
-          var maxPlayers = sessionStorage.getItem('maxPlayers');
-
-          if (tournamentId != null) {
-            var sessionId = sessionStorage.getItem('sessionId');
-            var tournamentPlayerInfo = {
-              sessionId: sessionId,
-              tournamentID: tournamentId,
-              maxPlayers: maxPlayers
-            }
-            this.socket.emit("winTournament", tournamentPlayerInfo)
-          }
-      },
-      lose () {
-        // Retrieve sessionId of player who lost and send a lose event to socket for tournament
+      updateTournament() {
+        var tournamentGamePlayerSessions = JSON.parse(sessionStorage.getItem('tournamentGamePlayers'));
         var tournamentId = sessionStorage.getItem('tournamentId');
+        var maxPlayers = sessionStorage.getItem('maxPlayers');
+
         if (tournamentId != null) {
-          var sessionId = sessionStorage.getItem('sessionId');
-          var tournamentPlayerInfo = {
-            sessionId: sessionId,
-            tournamentID: tournamentId
+          var winnerSessionId = sessionStorage.getItem('sessionId');
+          var loserSessionId = tournamentGamePlayerSessions.filter(i => i !== winnerSessionId)[0]
+
+          var tournamentInfo = {
+            tournamentID: tournamentId,
+            maxPlayers: maxPlayers,
+            gameWinner: winnerSessionId,
+            gameLoser: loserSessionId
           }
-          sessionStorage.removeItem('tournamentId')
-          sessionStorage.removeItem('gameRoomID')
-          this.socket.emit("loseTournament", tournamentPlayerInfo)
+
+          this.socket.emit("winTournament", tournamentInfo)
         }
       },
       hideWonTournament () {
-        sessionStorage.removeItem("tournamentId")
-        sessionStorage.removeItem("gameRoomID")
-        sessionStorage.removeItem("maxPlayers")
+        this.removeSessionStorageItems()
         this.isWonTournamentVisible = false
         this.$router.replace('/');
+      },
+      removeSessionStorageItems() {
+          sessionStorage.removeItem('tournamentId')
+          sessionStorage.removeItem('gameRoomID')
+          sessionStorage.removeItem('tournamentGamePlayers')
+          sessionStorage.removeItem("maxPlayers")
       }
     },
     created() {
