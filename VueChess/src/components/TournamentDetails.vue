@@ -94,6 +94,7 @@ export default {
             if (data.sessionIDs.includes(sessionId)) {
 
                 sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
+                sessionStorage.setItem('maxPlayers', data.maxPlayers)
 
                 // Sets the gameRoomID into browser storage
                 console.log("sessions for tourn game:" + data.sessionIds)

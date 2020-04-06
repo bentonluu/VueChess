@@ -90,15 +90,9 @@
       },
       win () {
         // Retrieve sessionId of player who won and send a win event to socket for tournament
-          console.log("in test")
           var tournamentId = sessionStorage.getItem('tournamentId');
-          var maxPlayers = 0;
-          TournamentsDB.getTournament(tournamentId).then(res => {
-            console.log("tournament info:" + res.maxPlayers)
-            maxPlayers = res.maxPlayers
-          })
+          var maxPlayers = sessionStorage.getItem('maxPlayers');
 
-          console.log("maxplayers: " + maxPlayers)
           if (tournamentId != null) {
             var sessionId = sessionStorage.getItem('sessionId');
             var tournamentPlayerInfo = {
@@ -106,7 +100,6 @@
               tournamentID: tournamentId,
               maxPlayers: maxPlayers
             }
-            console.log("transmitting socket")
             this.socket.emit("winTournament", tournamentPlayerInfo)
           }
       },
@@ -127,6 +120,7 @@
       hideWonTournament () {
         sessionStorage.removeItem("tournamentId")
         sessionStorage.removeItem("gameRoomID")
+        sessionStorage.removeItem("maxPlayers")
         this.isWonTournamentVisible = false
         this.$router.replace('/');
       }

@@ -88,7 +88,8 @@ io.on('connection', function(socket) {
             if (tournamentsMap.get(data.tournamentID).length == 2) {
                 var gameID = 'game' + Math.round(Math.random() * 100).toString();
                 var colors = ["black", "white"]
-                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: tournamentsMap.get(data.tournamentID), colors: colors})
+                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: tournamentsMap.get(data.tournamentID), colors: colors, 
+                    maxPlayers: data.maxPlayers})
                 io.emit("STARTGAME", tournamentsMap.get(data.tournamentID))
 
             } else {
@@ -101,7 +102,8 @@ io.on('connection', function(socket) {
                     console.log(sessionIDPair)
                     var gameID = 'game' + Math.round(Math.random() * 100).toString();
                     var colors = ["black", "white"]
-                    io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors})
+                    io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors, 
+                        maxPlayers: data.maxPlayers})
                     io.emit("STARTGAME", sessionIDPair)
                 });
             }
@@ -120,14 +122,16 @@ io.on('connection', function(socket) {
         if (newShuffledPlayersList.length == 2) {
             var gameID = 'game' + Math.round(Math.random() * 100).toString();
             var colors = ["black", "white"]
-            io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors})
+            io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors,
+                maxPlayers: maxPlayers})
             io.emit("STARTGAME", newShuffledPlayersList)
         } else {
 
             newShuffledPlayersList.forEach (sessionIDPair => {
                 var gameID = 'game' + Math.round(Math.random() * 100).toString();
                 var colors = ["black", "white"]
-                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors})
+                io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors,
+                    maxPlayers: maxPlayers})
                 io.emit("STARTGAME", sessionIDPair)
             });
         }
@@ -231,8 +235,12 @@ function shufflePlayersList(data) {
     var tournamentGroups = data.maxPlayers / 2
     var playerPairsList = []
 
-    for(var i =0; i < shuffledSessionList.length; i += tournamentGroups){
-        playerPairsList.push(shuffledSessionList.slice(i, i+tournamentGroups))
+    if (shuffledSessionList.length == 1) {
+        playerPairsList = shuffledSessionList
+    } else {
+        for(var i =0; i < shuffledSessionList.length; i += tournamentGroups){
+            playerPairsList.push(shuffledSessionList.slice(i, i+tournamentGroups))
+        }
     }
 
     return playerPairsList

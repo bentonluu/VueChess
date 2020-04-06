@@ -60,7 +60,6 @@ class TournamentsDB{
                     data
                 )
             } catch (err) {
-                console.log(err.message)
                 reject(err)
             }
         })
