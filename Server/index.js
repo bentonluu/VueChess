@@ -110,12 +110,18 @@ io.on('connection', function(socket) {
         }
     })
 
-    socket.on('winTournament', function(tournamentPlayerInfo) {
-        var newShuffledPlayersList = shufflePlayersList(tournamentPlayerInfo)
+    socket.on('winTournament', function(tournamentInfo) {
+
+        if (tournamentInfo.gameLoser != null) {
+            removeValue(tournamentInfo.tournamentID, tournamentInfo.gameLoser)
+            console.log(tournamentsMap.get(tournamentInfo.tournamentID))
+        }
+
+        var newShuffledPlayersList = shufflePlayersList(tournamentInfo)
         console.log(newShuffledPlayersList)
         console.log("players left in tournament" + newShuffledPlayersList.length)
         if (newShuffledPlayersList.length == 1) {
-            tournamentsMap.delete(tournamentPlayerInfo.tournamentID)
+            tournamentsMap.delete(tournamentInfo.tournamentID)
             socket.emit("wonEntireTournament")
         }
 
@@ -123,27 +129,20 @@ io.on('connection', function(socket) {
             var gameID = 'game' + Math.round(Math.random() * 100).toString();
             var colors = ["black", "white"]
             io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors,
-                maxPlayers: maxPlayers})
+                maxPlayers: data.maxPlayers})
             io.emit("STARTGAME", newShuffledPlayersList)
-        } else {
+        } else if (newShuffledPlayersList.length > 2) {
 
             newShuffledPlayersList.forEach (sessionIDPair => {
                 var gameID = 'game' + Math.round(Math.random() * 100).toString();
                 var colors = ["black", "white"]
                 io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors,
-                    maxPlayers: maxPlayers})
+                    maxPlayers: data.maxPlayers})
                 io.emit("STARTGAME", sessionIDPair)
             });
         }
 
         console.log("New tournament player list: " + newShuffledPlayersList)
-    })
-
-    socket.on('loseTournament', function(tournamentPlayerInfo) {
-        console.log("removed:" + tournamentPlayerInfo.sessionId)
-        console.log("tournamentID:" + tournamentPlayerInfo.tournamentID)
-        removeValue(tournamentPlayerInfo.tournamentID, tournamentPlayerInfo.sessionId)
-        console.log(tournamentsMap.get(tournamentPlayerInfo.tournamentID))
     })
 
     socket.on('LEAVEQUEUE', function() {
