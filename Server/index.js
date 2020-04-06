@@ -19,6 +19,7 @@ var gamesMap = new Map();
 var rooms = ['Lobby'];
 var pendingRooms = [];
 var roomCount = 0;
+var checkedIn= 0;
 
 // Middleware
 app.use(bodyParser.json())
@@ -111,33 +112,37 @@ io.on('connection', function(socket) {
     })
 
     socket.on('winTournament', function(tournamentInfo) {
-
         if (tournamentInfo.gameLoser != null) {
             removeValue(tournamentInfo.tournamentID, tournamentInfo.gameLoser)
             console.log(tournamentsMap.get(tournamentInfo.tournamentID))
         }
+        checkedIn++;
 
         var newShuffledPlayersList = shufflePlayersList(tournamentInfo)
         console.log(newShuffledPlayersList)
         console.log("players left in tournament" + newShuffledPlayersList.length)
         if (newShuffledPlayersList.length == 1) {
             tournamentsMap.delete(tournamentInfo.tournamentID)
+            checkedIn = 0;
             socket.emit("wonEntireTournament")
         }
 
         if (newShuffledPlayersList.length == 2) {
+            if (checkedIn == 2) {
+                console.log("start new game")
             var gameID = 'game' + Math.round(Math.random() * 100).toString();
             var colors = ["black", "white"]
             io.emit("startTournamentGame", {gameID: gameID , sessionIDs: newShuffledPlayersList, colors: colors,
-                maxPlayers: data.maxPlayers})
+                maxPlayers: tournamentInfo.maxPlayers})
             io.emit("STARTGAME", newShuffledPlayersList)
+            }
         } else if (newShuffledPlayersList.length > 2) {
 
             newShuffledPlayersList.forEach (sessionIDPair => {
                 var gameID = 'game' + Math.round(Math.random() * 100).toString();
                 var colors = ["black", "white"]
                 io.emit("startTournamentGame", {gameID: gameID , sessionIDs: sessionIDPair, colors: colors,
-                    maxPlayers: data.maxPlayers})
+                    maxPlayers: tournamentInfo.maxPlayers})
                 io.emit("STARTGAME", sessionIDPair)
             });
         }
@@ -238,10 +243,15 @@ function shufflePlayersList(data) {
         playerPairsList = shuffledSessionList
     } else {
         for(var i =0; i < shuffledSessionList.length; i += tournamentGroups){
-            playerPairsList.push(shuffledSessionList.slice(i, i+tournamentGroups))
+            if (shuffledSessionList.length == 2) {
+    			playerPairsList = shuffledSessionList
+            } else {
+                playerPairsList.push(shuffledSessionList.slice(i, i+2))
+            }        
         }
     }
 
+    console.log("player list:" + playerPairsList)
     return playerPairsList
 }
 

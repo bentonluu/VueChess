@@ -122,6 +122,30 @@
       this.socket.on("wonEntireTournament", () => {
         this.isWonTournamentVisible = true
       });
+
+              this.socket.on("startTournamentGame", (data) => {
+            console.log(data)
+            let sessionId = sessionStorage.getItem('sessionId');
+            if (data.sessionIDs.includes(sessionId)) {
+
+                sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
+                sessionStorage.setItem('maxPlayers', data.maxPlayers)
+                sessionStorage.setItem('tournamentGamePlayers', JSON.stringify(data.sessionIDs))
+
+                // Sets the gameRoomID into browser storage
+                console.log("sessions for tourn game:" + data.sessionIds)
+                if (data.sessionIDs.includes(sessionId)) {
+                    sessionStorage.setItem('gameRoomID', data.gameID);
+                }
+
+                this.socket.on('STARTGAME', (data) => {
+                    console.log(data)
+                    if (data.includes(sessionId)) {
+                        this.$router.go();
+                    }
+                });
+            }
+        })
     },
     watch: {
       // Enables or disables the corresponding player's chessboard when the currentPlayerMove changes
