@@ -66,36 +66,39 @@
       showEndGameModal() {
         this.isEndGameModalVisible = true;
       },
-      async navigateAway() {
+      navigateAway() {
         this.isEndGameModalVisible = false
 
-        if (this.whiteEndState === 'LOST' || this.blackEndState === 'LOST') {
-          this.lose()
-        } else if (this.blackEndState === 'WON' || this.whiteEndState === 'WON') {
-          let a = await this.win()
+        if (this.playerColor === "white") {
+          if (this.whiteEndState === "WON") {
+            this.win()
+          } else {
+            this.lose()
+          }
+        } else {
+          if (this.blackEndState === "WON") {
+            this.win()
+          } else {
+            this.lose()
+          }
         }
 
-        this.nav()
-      },
-      nav() {
         var tournamentId = sessionStorage.getItem('tournamentId');
-        if (tournamentId != null) {
-          this.$router.replace('/tournament')
-        } else {
+        if (tournamentId == null) {
           this.$router.replace('/');
         }
       },
       win () {
         // Retrieve sessionId of player who won and send a win event to socket for tournament
-        return new Promise(function(res, rej) {
           console.log("in test")
           var tournamentId = sessionStorage.getItem('tournamentId');
           var maxPlayers = 0;
           TournamentsDB.getTournament(tournamentId).then(res => {
-            console.log("tournament info:" + res)
-            maxPlayers = res.maxPlyers
+            console.log("tournament info:" + res.maxPlayers)
+            maxPlayers = res.maxPlayers
           })
 
+          console.log("maxplayers: " + maxPlayers)
           if (tournamentId != null) {
             var sessionId = sessionStorage.getItem('sessionId');
             var tournamentPlayerInfo = {
@@ -103,9 +106,9 @@
               tournamentID: tournamentId,
               maxPlayers: maxPlayers
             }
+            console.log("transmitting socket")
             this.socket.emit("winTournament", tournamentPlayerInfo)
           }
-        })
       },
       lose () {
         // Retrieve sessionId of player who lost and send a lose event to socket for tournament
@@ -125,6 +128,7 @@
         sessionStorage.removeItem("tournamentId")
         sessionStorage.removeItem("gameRoomID")
         this.isWonTournamentVisible = false
+        this.$router.replace('/');
       }
     },
     created() {

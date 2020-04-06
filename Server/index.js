@@ -109,7 +109,6 @@ io.on('connection', function(socket) {
     })
 
     socket.on('winTournament', function(tournamentPlayerInfo) {
-        
         var newShuffledPlayersList = shufflePlayersList(tournamentPlayerInfo)
         console.log(newShuffledPlayersList)
         console.log("players left in tournament" + newShuffledPlayersList.length)
