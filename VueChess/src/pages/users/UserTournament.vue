@@ -2,8 +2,6 @@
     <div class="main-container">
         <h1>Tournaments</h1>
 
-        <div class="btn" v-on:click="toMainPage">Back</div>
-
         <div class="tournamentHeader">
             <input placeholder="Search for a tournament" v-model="searchReq" type="text">
             <div class="btn" v-on:click="createNewTournament" v-show="isAdmin">Create New</div>
@@ -22,6 +20,8 @@
                 <td>{{tor.startTime}}</td>
             </tr>
         </table>
+
+        <div class="btn backButton" v-on:click="toMainPage">Back</div>
 
         <tournamentDetails v-bind:tournamentInfo="tournament" v-bind:disable="disable" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
         <manageTournament :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
@@ -117,12 +117,17 @@
         created() {
             if (this.$cookies.get("user_type") === "Admin") {
                 this.isAdmin = true
-            } 
+            }
         }
     }
 </script>
 
 <style lang="scss">
+
+.backButton {
+  margin-top: 20px
+}
+
 tr:nth-child(even) {
   background-color: #dddddd;
 }
@@ -136,7 +141,7 @@ table {
     border-collapse: collapse;
 }
 .tableColor {
-    background-color: #ffe599;
+    background-color: coral;
 }
 span {
     display: block;

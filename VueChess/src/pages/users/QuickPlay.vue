@@ -2,11 +2,10 @@
     <div class="main-container">
         <h1>Quick Play</h1>
 
-        <div class="btn" v-on:click="toMainPage">Back</div>
-
         <div>
             <div class="btn" v-on:click="showWaitModal">Random Player</div>
             <div class="btn" v-on:click="showModal">Invite Friend</div>
+            <div class="btn" v-on:click="toMainPage">Back</div>
         </div>
 
         <modal :randomJoinCode="randomJoinCode" v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
