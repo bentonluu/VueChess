@@ -142,12 +142,13 @@
             sessionStorage.setItem('gameRoomID', data.gameID);
           }
 
-          this.socket.on('STARTGAME', (data) => {
-            console.log(data)
-            if (data.includes(sessionId)) {
-                this.$router.go();
-            }
-          });
+                this.socket.on('STARTGAME', (game) => {
+                // Will only start a chess game if player is in the same game
+                    let gameID = sessionStorage.getItem('gameRoomID');
+                    if (gameID === game) {
+                        this.$router.go();
+                    }
+                });
           }
         })
     },
