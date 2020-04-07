@@ -1,7 +1,13 @@
 <template>
   <div class="main-container">
     <h1>Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
-    <div class="btn" v-on:click="goToQuickPlay">Quick Play</div>
+
+    <div>
+      <div class="btn" v-on:click="toQuickPlay">Quick Play</div>
+      <div class="btn" v-on:click="toTournament" >Tournaments</div>
+      <div class="btn" v-on:click="toLeaderboards">Leaderboards</div>
+      <div class="btn" v-on:click="toUnlockables">Unlockables</div>
+    </div>
     <div class="btn" v-on:click="logOut">Log Out</div>
   </div>
 </template>
@@ -22,9 +28,19 @@ export default {
       setTimeout(() => {
         this.$router.replace('/logout')
       },1000)
+
     },
-    goToQuickPlay() {
-      this.$router.replace({path: '/quickPlay'});
+    toQuickPlay(){
+      this.$router.push('quickPlay')
+    },
+    toTournament(){
+      this.$router.push('tournament')
+    },
+    toLeaderboards(){
+      this.$router.push('leaderboards')
+    },
+    toUnlockables(){
+      this.$router.push('unlockables')
     }
   },
   created() {

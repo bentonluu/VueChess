@@ -27,6 +27,7 @@
 <script>
   import io from 'socket.io-client';
   import UsersDB from "../UsersDB";
+  import TournamentsDB from "../TournamentsDB";
   export default {
     name: 'endGameModal',
     data () {
@@ -45,9 +46,10 @@
       },
       wonGame(username) {
         UsersDB.incrementWins(username);
-        sessionStorage.setItem('playerColor', '');
+        sessionStorage.setItem('playerColor', ''); 
       },
       lostGame(username) {
+        console.log("in lost game method")
         UsersDB.incrementLosses(username);
         sessionStorage.setItem('playerColor', '');
       }

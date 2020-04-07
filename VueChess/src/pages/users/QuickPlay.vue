@@ -2,6 +2,8 @@
     <div class="main-container">
         <h1>Quick Play</h1>
 
+        <div class="btn" v-on:click="toMainPage">Back</div>
+
         <div>
             <div class="btn" v-on:click="showWaitModal">Random Player</div>
             <div class="btn" v-on:click="showModal">Invite Friend</div>
@@ -112,6 +114,9 @@ export default {
         },
         hideErrorModal() {
             this.isErrorModalVisible = false;
+        },
+        toMainPage() {
+            this.$router.replace('/')
         },
         submit(joinCode) {
             console.log(joinCode);

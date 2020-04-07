@@ -4,7 +4,8 @@
       <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[1]">
         <span class="playerName playerBlack">{{ playerList[1] }}</span>
         <chessboard class="cg-board-wrap" :fen="currentFenString" @onMove="showInfo"/>
-        <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>
+        <wonTournament v-show="isWonTournamentVisible" @close="hideWonTournament"></wonTournament>
         <span class="playerName playerWhite">{{ playerList[0] }}</span>
       </div>
     </div>
@@ -12,7 +13,8 @@
       <div :class="chessboardLayerBlack ? chessboardLayer[1] : chessboardLayer[0]">
         <span class="playerName playerWhite">{{ playerList[0] }}</span>
         <chessboard class="cg-board-wrap" orientation="black" :fen="currentFenString" @onMove="showInfo"/>
-        <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>
+        <wonTournament v-show="isWonTournamentVisible" @close="hideWonTournament"></wonTournament>
         <span class="playerName playerBlack">{{ playerList[1] }}</span>
       </div>
     </div>
@@ -23,6 +25,9 @@
   import { chessboard } from 'vue-chessboard'
   import 'vue-chessboard/dist/vue-chessboard.css'
   import endGameModal from "./endGameModal";
+  import wonTournament from './wonTournamentModal'
+  import TournamentsDB from "../TournamentsDB";
+  import io from 'socket.io-client';
 
   export default {
     name: "Chessboard",
@@ -35,8 +40,10 @@
         chessboardLayerWhite: true,
         chessboardLayerBlack: false,
         isEndGameModalVisible: false,
+        isWonTournamentVisible: false,
         blackEndState: '',
         whiteEndState: '',
+        socket: io('http://localhost:3000'),
       }
     },
     props: {
@@ -51,7 +58,8 @@
     },
     components: {
       chessboard,
-      endGameModal
+      endGameModal,
+      wonTournament
     },
     methods: {
       showInfo(data) {
@@ -62,12 +70,87 @@
       showEndGameModal() {
         this.isEndGameModalVisible = true;
       },
-      returnToMainMenu() {
-        sessionStorage.setItem('gameRoomID', '');
-        this.$router.replace('/');
+      navigateAway() {
+        this.isEndGameModalVisible = false
+
+        if (this.playerColor === "white") {
+          if (this.whiteEndState === "WON") {
+            this.updateTournament()
+          } else {
+            this.removeSessionStorageItems()
+            this.$router.push('/').catch(err => {});
+          }
+        } else {
+          if (this.blackEndState === "WON") {
+            this.updateTournament()
+          } else {
+            this.removeSessionStorageItems()
+            this.$router.push('/').catch(err => {});
+          }
+        }
       },
+      updateTournament() {
+        var tournamentGamePlayerSessions = JSON.parse(sessionStorage.getItem('tournamentGamePlayers'));
+        var tournamentId = sessionStorage.getItem('tournamentId');
+        var maxPlayers = sessionStorage.getItem('maxPlayers');
+
+        if (tournamentId != null) {
+          var winnerSessionId = sessionStorage.getItem('sessionId');
+          var loserSessionId = tournamentGamePlayerSessions.filter(i => i !== winnerSessionId)[0]
+
+          var tournamentInfo = {
+            tournamentID: tournamentId,
+            maxPlayers: maxPlayers,
+            gameWinner: winnerSessionId,
+            gameLoser: loserSessionId
+          }
+
+          this.socket.emit("winTournament", tournamentInfo)
+        }
+      },
+      hideWonTournament () {
+        this.removeSessionStorageItems()
+        this.isWonTournamentVisible = false
+        this.$router.push('/').catch(err => {});
+      },
+      removeSessionStorageItems() {
+          sessionStorage.removeItem('tournamentId')
+          sessionStorage.removeItem('gameRoomID')
+          sessionStorage.removeItem('tournamentGamePlayers')
+          sessionStorage.removeItem("maxPlayers")
+      }
     },
     created() {
+    },
+    mounted() {
+      this.socket.on("wonEntireTournament", () => {
+        this.isWonTournamentVisible = true
+      });
+
+      this.socket.on("startTournamentGame", (data) => {
+        console.log(data)
+        let sessionId = sessionStorage.getItem('sessionId');
+        if (data.sessionIDs.includes(sessionId)) {
+
+          sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
+          sessionStorage.setItem('maxPlayers', data.maxPlayers)
+          sessionStorage.setItem('tournamentGamePlayers', JSON.stringify(data.sessionIDs))
+
+          // Sets the gameRoomID into browser storage
+          console.log("sessions for tourn game:" + data.sessionIds)
+          if (data.sessionIDs.includes(sessionId)) {
+            sessionStorage.setItem('gameRoomID', data.gameID);
+          }
+
+                this.socket.on('STARTGAME', (game) => {
+                // Will only start a chess game if player is in the same game
+                    let gameID = sessionStorage.getItem('gameRoomID');
+                    if (gameID === game) {
+                        this.$router.go();
+                    }
+                });
+          }
+        })
     },
     watch: {
       // Enables or disables the corresponding player's chessboard when the currentPlayerMove changes

@@ -59,7 +59,15 @@
       this.socket.emit('INITGAME', gameRoom);
 
       this.socket.on('USERLIST', (userList) => {
-        this.playerList = userList;
+        let tournamentPlayers = sessionStorage.getItem('tournamentGamePlayers');
+        if (tournamentPlayers !== null) {
+          let res = tournamentPlayers.split('"');
+          let tempPlayerList = [res[1], res[3]];
+          this.playerList = tempPlayerList;
+        }
+        else {
+          this.playerList = userList;
+        }
       });
 
       // Used for chess logic to check for a checkmate or draw in the game
