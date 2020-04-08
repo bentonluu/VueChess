@@ -60,7 +60,7 @@
 
       this.socket.on('USERLIST', (userList) => {
         let tournamentPlayers = sessionStorage.getItem('tournamentGamePlayers');
-        if (tournamentPlayers !== (null || '')) {
+        if (tournamentPlayers !== null) {
           let res = tournamentPlayers.split('"');
           let tempPlayerList = [res[1], res[3]];
           this.playerList = tempPlayerList;
