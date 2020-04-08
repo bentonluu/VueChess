@@ -6,7 +6,6 @@
       <div class="btn" v-on:click="toQuickPlay">Quick Play</div>
       <div class="btn" v-on:click="toTournament" >Tournaments</div>
       <div class="btn" v-on:click="toLeaderboards">Leaderboards</div>
-      <div class="btn" v-on:click="toUnlockables">Unlockables</div>
       <div class="btn" v-on:click="logOut">Log Out</div>
     </div>
 
@@ -40,9 +39,6 @@ export default {
     },
     toLeaderboards(){
       this.$router.push('leaderboards')
-    },
-    toUnlockables(){
-      this.$router.push('unlockables')
     }
   },
   created() {
