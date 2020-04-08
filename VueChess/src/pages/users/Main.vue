@@ -7,9 +7,10 @@
       <div class="btn" v-on:click="toTournament" >Tournaments</div>
       <div class="btn" v-on:click="toLeaderboards">Leaderboards</div>
       <div class="btn" v-on:click="toUnlockables">Unlockables</div>
+      <div class="btn" v-on:click="logOut">Log Out</div>
     </div>
 
-    <div class="btn arrow" v-on:click="logOut">Log Out</div>
+    
   </div>
 </template>
 
@@ -78,6 +79,7 @@ export default {
     background: white;
     position: relative;
 }
+
 .btn{
   border:2px solid lightgray;
   padding:15px 55px;
