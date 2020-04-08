@@ -12,7 +12,6 @@ import Main from './pages/users/Main'
 import QuickPlay from './pages/users/QuickPlay'
 import UserTournament from './pages/users/UserTournament'
 import Leaderboards from './pages/users/Leaderboards'
-import Unlockables from './pages/users/Unlockables'
 
 Vue.use(VModal, {dialog: true})
 Vue.use(VueCookies)
@@ -61,7 +60,6 @@ const router = new VueRouter({
     { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth},
     { path: '/tournament', component: UserTournament, beforeEnter: requireAuth },
     { path: '/leaderboards', component: Leaderboards, beforeEnter: requireAuth },
-    { path: '/unlockables', component: Unlockables, beforeEnter: requireAuth},
     { path: '/chessgame', component: ChessGame, beforeEnter: requireAuth }
   ]
 })
