@@ -36,9 +36,9 @@
             <p class="error" v-if="errorPlayerCount">Number of players must be an even number.</p>
 
             <footer class="footer">
-                <div class="btn" v-on:click="close">Close</div>
-                <div class="btn" v-show="!create" v-on:click="createTournament">Update</div>
-                <div class="btn" v-show="create" v-on:click="createTournament">Create</div>
+                <div class="btn buttonSpacing" v-on:click="close">Close</div>
+                <div class="btn buttonSpacing" v-show="!create" v-on:click="createTournament">Update</div>
+                <div class="btn buttonSpacing" v-show="create" v-on:click="createTournament">Create</div>
             </footer>
         </div>
     </div>
@@ -58,7 +58,7 @@ export default {
             errorDuplicate: false,
             errorTime: false,
             errorPlayerCount: false,
-            created: true,
+            created: false,
             name: '',
             maxPlayers: '',
             startDate: '',
@@ -193,5 +193,9 @@ export default {
 }
 .signUp {
   color: limegreen;
+}
+.buttonSpacing {
+    margin-right: 5px;
+    margin-left: 5px;
 }
 </style>

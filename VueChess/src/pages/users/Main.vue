@@ -8,7 +8,8 @@
       <div class="btn" v-on:click="toLeaderboards">Leaderboards</div>
       <div class="btn" v-on:click="toUnlockables">Unlockables</div>
     </div>
-    <div class="btn" v-on:click="logOut">Log Out</div>
+
+    <div class="btn arrow" v-on:click="logOut">Log Out</div>
   </div>
 </template>
 
@@ -70,11 +71,12 @@ export default {
     display:flex;
     flex-direction: column;
     align-items: center;
-    padding:20px;
+    padding:40px;
     min-width: 300px;
     width:50%;
     border-radius: 10px;
     background: white;
+    position: relative;
 }
 .btn{
   border:2px solid lightgray;
@@ -94,5 +96,11 @@ export default {
     background-color: lightsalmon;
     border-color:lightsalmon;
   }
+}
+.arrow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 0;
 }
 </style>

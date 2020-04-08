@@ -2,7 +2,8 @@
     <div class="main-container">
         <h1>Leaderboards</h1>
 
-        <div class="btn" v-on:click="toMainPage">Back</div>
+        <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
+
     </div>
 </template>
 
@@ -11,7 +12,7 @@
         name: 'leaderboards',
         data() {
             return {
-
+                leftArrow: require('../../assets/leftArrow.png')
             }
         },
         methods: {
@@ -32,5 +33,15 @@
     width:50%;
     border-radius: 10px;
     background: white;
+    position: relative;
+}
+.arrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 5px;
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
 }
 </style>
