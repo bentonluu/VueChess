@@ -2,7 +2,7 @@
     <div class="main-container">
         <h1>Quick Play</h1>
 
-        <div class="btn" v-on:click="toMainPage">Back</div>
+        <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
 
         <div>
             <div class="btn" v-on:click="showWaitModal">Random Player</div>
@@ -36,6 +36,7 @@ export default {
             searchedUsername: '',
             socket: io('http://localhost:3000'),
             randomJoinCode: '',
+            leftArrow: require('../../assets/leftArrow.png')
         }
     },
     created() {
@@ -156,6 +157,7 @@ export default {
     width:30%;
     border-radius: 10px;
     background: white;
+    position: relative;
 }
 .btn{
   border:2px solid lightgray;
@@ -175,5 +177,14 @@ export default {
     background-color: lightsalmon;
     border-color:lightsalmon;
   }
+}
+.arrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 5px;
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
 }
 </style>

@@ -5,9 +5,11 @@
 
                 <div class="options">
                     <h1>{{tournamentInfo.name}}</h1>
-                    <div class="btn" v-on:click="editTournament" v-show="isAdmin">Edit</div>
-                    <div class="btn" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
-                    <div v-bind:style="{'pointer-events': this.disable ? 'none' : null}" class="btn" v-on:click="joinTournament">Join</div>
+                    <div class="test"> 
+                        <div class="btn test2" v-on:click="editTournament" v-show="isAdmin">Edit</div>
+                        <div class="btn test2" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
+                        <div v-bind:style="{'pointer-events': this.disable ? 'none' : null}" class="btn test2" v-on:click="joinTournament">Join</div>
+                    </div>
                 </div>
 
                 <div class="creator">
@@ -32,7 +34,7 @@
             <p class="delete" v-if="tournamentDeleted">Tournament deleted</p>
 
             <footer class="footer">
-                <div class="btn" v-on:click="close">Close</div>
+                <div class="btn closeButton" v-on:click="close">Close</div>
             </footer>
         </div>
     </div>
@@ -137,8 +139,7 @@ export default {
     padding: 20px;
 }
 .options {
-    display: flex;
-    flex-direction: row;
+    display: block;
 }
 .modal-backdrop {
     position: fixed;
@@ -164,7 +165,7 @@ export default {
     padding: 20px 10px;
 }
 .footer {
-    display: flex;
+    display: block;
     flex-direction: row;
 }
 .creator {
@@ -172,5 +173,16 @@ export default {
 }
 .delete {
   color: limegreen;
+}
+.test {
+    display: flex;
+    flex-direction: row;
+}
+.test2 {
+    margin-right: 5px;
+}
+.closeButton {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 </style>
