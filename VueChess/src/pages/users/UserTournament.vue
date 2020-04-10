@@ -118,7 +118,7 @@
         created() {
             if (this.$cookies.get("user_type") === "Admin") {
                 this.isAdmin = true
-            } 
+            }
         }
     }
 </script>

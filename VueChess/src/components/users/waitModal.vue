@@ -25,7 +25,25 @@
     methods: {
       close() {
         this.$emit('close');
+        this.minutes = 0;
+        this.seconds = 0;
       },
+      increaseTimer() {
+        if(this.seconds < 60) {
+          setTimeout(() => {
+            this.seconds += 1;
+            this.increaseTimer()
+          }, 1000)
+        }
+        else if (this.seconds == 60) {
+          this.minutes += 1;
+          this.seconds = 0;
+          this.increaseTimer();
+        }
+      }
+    },
+    created() {
+      this.increaseTimer();
     }
   }
 </script>
