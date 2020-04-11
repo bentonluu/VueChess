@@ -8,17 +8,15 @@
               <th>Username</th>
               <th>Win(s)</th>
               <th>Loss</th>
-              <th>Draw(s)</th>
               <th>W/L Ratio</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in rows">
               <td>{{row.username}}</td>
-              <td>{{row.win}}</td>
-              <td>{{row.loss}}</td>
-              <td>{{row.draw}}</td>
-              <td>{{row.ratio}}</td>
+              <td>{{row.wins}}</td>
+              <td>{{row.losses}}</td>
+              <td>{{row.wins/row.losses}}</td>
             </tr>
           </tbody>
         </table>
@@ -34,44 +32,19 @@
 import modal from '../../components/users/modal'
 import errorModal from '../../components/users/errorModal'
 import UsersDB from '../../UsersDB'
-var winlossdata =""
-async function main() {
-  let userInfo = await UsersDB.getUsers();
-  userInfo.sort((a, b) => (a.wins < b.wins) ? 1 : -1)
 
-  winlossdata = "["
-  var i;
-  for (i = 0; i < userInfo.length; i++) {
-    if (i==0){
-      winlossdata += "{ username: '" + userInfo[i].username + "', win:" + " '"+ userInfo[i].wins + "', loss: '" + userInfo[i].losses + "'" + "loss: '1', draw: '0', ratio:'0'"+ "} "
-    }
-    else  {
-      winlossdata += ", { username: '" + userInfo[i].username + "', win:" + " '"+ userInfo[i].wins + "', loss: '" + userInfo[i].losses + "'" + "loss: '1', draw: '0', ratio:'0'" +"} "
-    }
-  }
-  console.log(winlossdata)
-}
-
-main();
 export default {
     name: 'leaderBoard',
     components: {
         modal,
         errorModal
-
     },
     data () {
         return {
-        rows: [
-          { username: 'username2', win: "1000", loss: '1', draw: '0',  ratio:'0' },
-          { username: 'username3', win: "1000", loss: '1', draw: '0', ratio:'0'},
-          { username: 'username4', win: "1000", loss: '1', draw: '0', ratio:'0' },
-          { username: 'username5', win: "1000", loss: '1', draw: '0', ratio:'0' },
-          { username: 'username6', win: "1000", loss: '1', draw: '0', ratio:'0' }
-        ],
-            isModalVisible: false,
-            isErrorModalVisible: false,
-            searchedUsername: ""
+          rows: [],
+          isModalVisible: false,
+          isErrorModalVisible: false,
+          searchedUsername: ""
         }
     },
     methods: {
@@ -92,6 +65,12 @@ export default {
             this.searchedUsername = un;
             this.isModalVisible = false;
         }
+    },
+    async created(){
+      this.rows = await UsersDB.getUsers().then(function(x){
+           x.sort((a, b) => (a.wins < b.wins) ? 1 : -1)
+          return x;
+      })
     }
 }
 </script>
