@@ -11,7 +11,7 @@
 
         <modal :randomJoinCode="randomJoinCode" v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
-        <waitModal v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
+        <waitModal :isWaitModalVisible="isWaitModalVisible" v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
     </div>
 </template>
 

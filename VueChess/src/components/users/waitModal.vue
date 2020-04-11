@@ -22,6 +22,9 @@
         seconds: 0
       }
     },
+    props: {
+      isWaitModalVisible: Boolean,
+    },
     methods: {
       close() {
         this.$emit('close');
@@ -42,8 +45,12 @@
         }
       }
     },
-    created() {
-      this.increaseTimer();
+    watch: {
+      isWaitModalVisible: function() {
+        if (this.isWaitModalVisible === true) {
+          this.increaseTimer();
+        }
+      }
     }
   }
 </script>
