@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-        <h1>Quick Play</h1>
+        <h1 class="main-title">Quick Play</h1>
 
         <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
 
@@ -158,6 +158,9 @@ export default {
     border-radius: 10px;
     background: white;
     position: relative;
+}
+.main-title{
+  margin-bottom: 20px;
 }
 .btn{
   border:2px solid lightgray;

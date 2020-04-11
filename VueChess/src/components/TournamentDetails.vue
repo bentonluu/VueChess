@@ -4,8 +4,8 @@
             <section class="body">
 
                 <div class="options">
-                    <h1>{{tournamentInfo.name}}</h1>
-                    <div class="test"> 
+                    <h1><strong>Name:</strong> {{tournamentInfo.name}}</h1>
+                    <div class="test">
                         <div class="btn test2" v-on:click="editTournament" v-show="isAdmin">Edit</div>
                         <div class="btn test2" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
                         <div v-bind:style="{'pointer-events': this.disable ? 'none' : null}" class="btn test2" v-on:click="joinTournament">Join</div>
@@ -19,12 +19,12 @@
                 <div class="mainrow">
                     <div class="maincolumn">
                         <div class="row">
-                            <div class="column">Players</div>
+                            <div class="column tournamentDetails">Max Players</div>
                             <div class="column">{{tournamentInfo.maxPlayers}}</div>
                         </div>
 
                         <div class="row">
-                            <div class="column">Start Date & Time</div>
+                            <div class="column tournamentDetails">Start Date & Time</div>
                             <div class="column">{{tournamentInfo.startTime}}</div>
                         </div>
                     </div>
@@ -66,10 +66,9 @@ export default {
             this.tournamentDeleted = true
         },
         joinTournament() {
-
             let sessionId = sessionStorage.getItem('sessionId');
             console.log("sess id: " + sessionId)
-            this.socket.emit('beginTournament', 
+            this.socket.emit('beginTournament',
                 { tournamentID: this.tournamentInfo.name, sessionID: sessionId, maxPlayers: this.tournamentInfo.maxPlayers});
 
             // Sets the sessionID into browser storage
@@ -82,7 +81,7 @@ export default {
     created() {
         if (this.$cookies.get("user_type") === "Admin") {
             this.isAdmin = true
-        } 
+        }
     },
     mounted() {
 
@@ -123,7 +122,8 @@ export default {
 .mainrow {
     display: flex;
     background-color: lightgray;
-    border: 1px solid black;
+    border: 2px solid black;
+    border-radius: 10px;
 }
 .row {
     display: flex;
@@ -136,7 +136,7 @@ export default {
 }
 .maincolumn {
     flex: 1;
-    padding: 20px;
+    padding: 15px;
 }
 .options {
     display: block;
@@ -170,6 +170,8 @@ export default {
 }
 .creator {
     text-align: left;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 .delete {
   color: limegreen;
@@ -184,5 +186,8 @@ export default {
 .closeButton {
     margin-left: 5px;
     margin-right: 5px;
+}
+.tournamentDetails {
+  font-weight: bold;
 }
 </style>

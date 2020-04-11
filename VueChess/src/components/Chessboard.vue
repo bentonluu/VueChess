@@ -1,7 +1,7 @@
 <template>
   <div id="chessboard">
     <div v-if="playerColor === 'white'">
-      <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[1]">
+      <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[0]">
         <span class="playerName playerBlack">{{ playerList[1] }}</span>
         <chessboard class="cg-board-wrap" :fen="currentFenString" @onMove="showInfo"/>
         <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>

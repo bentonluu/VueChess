@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-    <h1>Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
+    <h1 class="main-title">Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
 
     <div>
       <div class="btn" v-on:click="toQuickPlay">Quick Play</div>
@@ -9,7 +9,7 @@
       <div class="btn" v-on:click="logOut">Log Out</div>
     </div>
 
-    
+
   </div>
 </template>
 
@@ -75,7 +75,9 @@ export default {
     background: white;
     position: relative;
 }
-
+.main-title{
+  margin-bottom: 20px;
+}
 .btn{
   border:2px solid lightgray;
   padding:15px 55px;
