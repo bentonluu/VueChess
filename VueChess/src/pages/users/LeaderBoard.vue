@@ -33,17 +33,36 @@
 <script>
 import modal from '../../components/users/modal'
 import errorModal from '../../components/users/errorModal'
+import UsersDB from '../../UsersDB'
+var winlossdata =""
+async function main() {
+  let userInfo = await UsersDB.getUsers();
+  userInfo.sort((a, b) => (a.wins < b.wins) ? 1 : -1)
 
+  winlossdata = "["
+  var i;
+  for (i = 0; i < userInfo.length; i++) {
+    if (i==0){
+      winlossdata += "{ username: '" + userInfo[i].username + "', win:" + " '"+ userInfo[i].wins + "', loss: '" + userInfo[i].losses + "'" + "loss: '1', draw: '0', ratio:'0'"+ "} "
+    }
+    else  {
+      winlossdata += ", { username: '" + userInfo[i].username + "', win:" + " '"+ userInfo[i].wins + "', loss: '" + userInfo[i].losses + "'" + "loss: '1', draw: '0', ratio:'0'" +"} "
+    }
+  }
+  console.log(winlossdata)
+}
+
+main();
 export default {
     name: 'leaderBoard',
     components: {
         modal,
         errorModal
+
     },
     data () {
         return {
         rows: [
-          { username: 'username1', win: "1000", loss: '1', draw: '0', ratio:'0' },
           { username: 'username2', win: "1000", loss: '1', draw: '0',  ratio:'0' },
           { username: 'username3', win: "1000", loss: '1', draw: '0', ratio:'0'},
           { username: 'username4', win: "1000", loss: '1', draw: '0', ratio:'0' },
@@ -56,6 +75,7 @@ export default {
         }
     },
     methods: {
+
         showModal() {
             this.isModalVisible = true;
         },
