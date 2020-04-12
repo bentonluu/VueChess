@@ -81,8 +81,8 @@ export default {
     flex-direction: column;
     align-items: center;
     padding:20px;
-    min-width: 300px;
-    width:50%;
+    min-width: 100px;
+    width:70%;
     border-radius: 10px;
     background: white;
 }
@@ -110,7 +110,7 @@ table {
   width: 750px;
   border-collapse: collapse;
   border: 3px solid #44475C;
-  margin: 10px 10px 0 10px;
+  margin: 0px 0px 0 0px;
 }
 
 table th {
