@@ -1,6 +1,7 @@
 <template>
   <div class="main-container">
-    <h1 class="main-title">Main Page, Welcome <span v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</span></h1>
+    <h2 class="logo">Chess & Chill <span v-show="isAdmin">(Admin)</span></h2>
+    <h1 class="main-title">Welcome <strong v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</strong></h1>
 
     <div>
       <div class="btn" v-on:click="toQuickPlay">Quick Play</div>
@@ -22,6 +23,7 @@ export default {
   data () {
     return {
       socket: io('http://localhost:3000'),
+      isAdmin: false,
     }
   },
   methods:{
@@ -59,11 +61,18 @@ export default {
       console.log("Session ID: " + data.sessionID);
       sessionStorage.setItem('sessionId', data.sessionID);
     });
+
+    if (this.$cookies.get("user_type") === "Admin") {
+      this.isAdmin = true
+    }
   }
 }
 </script>
 
 <style lang="scss">
+.logo {
+  margin: 0;
+}
 .main-container{
     display:flex;
     flex-direction: column;

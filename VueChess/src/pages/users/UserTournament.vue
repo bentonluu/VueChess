@@ -6,7 +6,7 @@
 
         <div class="tournamentHeader">
             <input class="searchInput" placeholder="Search" v-model="searchReq" type="text">
-            <div class="btn" v-on:click="createNewTournament" v-show="isAdmin">Create New</div>
+            <div class="btn" v-on:click="createNewTournament" v-show="isAdmin">Create</div>
         </div>
 
         <table>
@@ -24,7 +24,7 @@
         </table>
 
         <tournamentDetails v-bind:tournamentInfo="tournament" v-bind:disable="disable" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
-        <manageTournament :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
+        <manageTournament :tournamentInfo="tournament" :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
     </div>
 </template>
 
@@ -167,6 +167,10 @@ span {
 }
 .row:hover {
     cursor: pointer;
+}
+.btn {
+  margin: 10px;
+  padding:15px 45px;
 }
 .tournamentHeader {
     display: flex;

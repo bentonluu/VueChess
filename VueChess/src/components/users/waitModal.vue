@@ -50,6 +50,10 @@
         if (this.isWaitModalVisible === true) {
           this.increaseTimer();
         }
+        else {
+          this.minutes = 0;
+          this.seconds = 0;
+        }
       }
     }
   }
