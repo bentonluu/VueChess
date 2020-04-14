@@ -1,22 +1,22 @@
 <template>
     <div class="main-container">
-        <h1>Tournaments</h1>
+        <h1 class="title">Tournaments</h1>
 
         <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
 
         <div class="tournamentHeader">
-            <input placeholder="Search for a tournament" v-model="searchReq" type="text">
-            <div class="btn" v-on:click="createNewTournament" v-show="isAdmin">Create New</div>
+            <input class="searchInput" placeholder="Search" v-model="searchReq" type="text">
+            <div class="btn" v-on:click="createNewTournament" v-show="isAdmin">Create</div>
         </div>
 
         <table>
             <tr class="tableColor">
                 <th>Name</th>
-                <th>Players</th>
+                <th>Max Players</th>
                 <th>Start Date and Time</th>
             </tr>
 
-            <tr class="row" v-for="tor in search" v-bind:key="tor._id" v-on:click="showDetailsModal(tor)">
+            <tr class="row tournamentList" v-for="tor in search" v-bind:key="tor._id" v-on:click="showDetailsModal(tor)">
                 <td>{{tor.name}}</td>
                 <td>{{tor.maxPlayers}}</td>
                 <td>{{tor.startTime}}</td>
@@ -24,7 +24,7 @@
         </table>
 
         <tournamentDetails v-bind:tournamentInfo="tournament" v-bind:disable="disable" v-show="isTournamentDetailsVisible" @close="hideDetailsModal" @edit="editTournament"></tournamentDetails>
-        <manageTournament :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
+        <manageTournament :tournamentInfo="tournament" :create="createNew" v-show="isTournamentManagerVisible" @close="hideTournamentManager"></manageTournament>
     </div>
 </template>
 
@@ -118,12 +118,12 @@
         created() {
             if (this.$cookies.get("user_type") === "Admin") {
                 this.isAdmin = true
-            } 
+            }
         }
     }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .main-container{
     display:flex;
     flex-direction: column;
@@ -135,20 +135,31 @@
     background: white;
     position: relative;
 }
-tr:nth-child(even) {
-  background-color: #dddddd;
+.title {
+  margin: 0;
 }
 td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
+  padding: 14px;
   text-align: center;
+  border-bottom: 2px solid lightgray;
 }
 table {
     border-collapse: collapse;
+    border-spacing: 0;
+    box-shadow: 0 0 12px lightgrey;
+}
+.tournamentList:hover {
+  background-color: lightgray;
+  color: white;
+  text-shadow: 0 0 1px white;
+}
+table tr:last-child td {
+  border: none;
 }
 .tableColor {
-    background-color: #ffe599;
+    background-color: coral;
+    color: white;
+    font-weight: bold;
 }
 span {
     display: block;
@@ -157,17 +168,23 @@ span {
 .row:hover {
     cursor: pointer;
 }
+.btn {
+  margin: 10px;
+  padding:15px 45px;
+}
 .tournamentHeader {
     display: flex;
     flex-direction: row;
+    margin-bottom: 5px;
 }
 input{
   font-size: 18px;
-  margin: 20px;
+  margin: 10px;
   width: 80%;
   display: block;
   border: none;
-  padding: 10px 0;
+  text-align: center;
+  padding: 10px;
   border-bottom: solid 2px grey;
   transition:ease-in 0.2s all;
   &:focus{
@@ -176,12 +193,22 @@ input{
   }
 }
 .arrow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-left: 5px;
-    height: 50px;
-    width: 50px;
-    cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 15px;
+  margin-left: 20px;
+  padding: 6px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  border: 2px solid lightgray;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+}
+.arrow:hover {
+  background: coral;
+  color: white;
+  border: 2px solid transparent;
 }
 </style>

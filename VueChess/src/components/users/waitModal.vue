@@ -22,10 +22,39 @@
         seconds: 0
       }
     },
+    props: {
+      isWaitModalVisible: Boolean,
+    },
     methods: {
       close() {
         this.$emit('close');
+        this.minutes = 0;
+        this.seconds = 0;
       },
+      increaseTimer() {
+        if(this.seconds < 60) {
+          setTimeout(() => {
+            this.seconds += 1;
+            this.increaseTimer()
+          }, 1000)
+        }
+        else if (this.seconds == 60) {
+          this.minutes += 1;
+          this.seconds = 0;
+          this.increaseTimer();
+        }
+      }
+    },
+    watch: {
+      isWaitModalVisible: function() {
+        if (this.isWaitModalVisible === true) {
+          this.increaseTimer();
+        }
+        else {
+          this.minutes = 0;
+          this.seconds = 0;
+        }
+      }
     }
   }
 </script>
