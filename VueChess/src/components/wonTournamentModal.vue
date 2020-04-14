@@ -2,15 +2,10 @@
     <div class="modal-backdrop">
         <div class="modal">
             <section class="body">
-                <div>Your random game code:</div>
-                <div><span class="code">{{ randomJoinCode }}</span></div>
-                <br>
-                <div>Join a game (enter game code below)</div>
-                <input v-model="joinCode" type="text">
+                <div>You Won The Tournament</div>
             </section>
 
             <footer class="footer">
-                <div class="btn" v-on:click="submit">Join</div>
                 <div class="btn" v-on:click="close">Close</div>
             </footer>
         </div>
@@ -19,25 +14,16 @@
 
 <script>
 export default {
-    name: 'modal',
+    name: 'wonTournamentModal',
     data () {
         return {
-            joinCode: '',
         }
     },
     methods: {
         close() {
             this.$emit('close');
-        },
-        submit() {
-            console.log(this.joinCode);
-            this.$emit('submit', this.joinCode);
-            this.joinCode = '';
-        },
+        }
     },
-    props: {
-        randomJoinCode: String,
-    }
 }
 </script>
 

@@ -16,6 +16,8 @@
 <script>
 import UsersDB from '../UsersDB'
 
+
+
 export default {
   name: 'Signup',
   data: () => ({
@@ -50,14 +52,13 @@ export default {
         this.signedUp = false
       }
       })
-     
-      
-
-      
     },
     backNavigate(){
       this.$router.replace('/login')
     }
+  },
+  created(){
+    
   }
 }
 </script>

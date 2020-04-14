@@ -1,17 +1,18 @@
 <template>
     <div class="modal-backdrop">
         <div class="modal">
+            <header class="modal-header">
+                <div>Tournament Name</div>
+            </header>
+
             <section class="body">
-                <div>Your random game code:</div>
-                <div><span class="code">{{ randomJoinCode }}</span></div>
-                <br>
-                <div>Join a game (enter game code below)</div>
-                <input v-model="joinCode" type="text">
+                <div>Player capacity not met, please choose from the following:</div>
             </section>
 
             <footer class="footer">
-                <div class="btn" v-on:click="submit">Join</div>
-                <div class="btn" v-on:click="close">Close</div>
+                <div class="btn" v-on:click="close">1-Day Postpone</div>
+                <div class="btn" v-on:click="submit">Start Anyway</div>
+                <div class="btn" v-on:click="submit">Cancel & Delete</div>
             </footer>
         </div>
     </div>
@@ -22,7 +23,6 @@ export default {
     name: 'modal',
     data () {
         return {
-            joinCode: '',
         }
     },
     methods: {
@@ -30,21 +30,12 @@ export default {
             this.$emit('close');
         },
         submit() {
-            console.log(this.joinCode);
-            this.$emit('submit', this.joinCode);
-            this.joinCode = '';
-        },
-    },
-    props: {
-        randomJoinCode: String,
+        }
     }
 }
 </script>
 
 <style lang="scss">
-.code {
-  font-weight: bold;
-}
 .btn{
   border:2px solid lightgray;
   padding:15px 55px;
@@ -88,6 +79,9 @@ export default {
 .body {
     position: relative;
     padding: 20px 10px;
+}
+.modal-header {
+    border-bottom: 1px solid black;
 }
 input{
   font-size: 18px;

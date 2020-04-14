@@ -25,10 +25,14 @@
 </template>
 
 <script>
+  import io from 'socket.io-client';
+  import UsersDB from "../UsersDB";
+  import TournamentsDB from "../TournamentsDB";
   export default {
     name: 'endGameModal',
     data () {
       return {
+        socket: io('http://localhost:3000'),
       }
     },
     props: {
@@ -40,6 +44,39 @@
       close() {
         this.$emit('close');
       },
+      wonGame(username) {
+        UsersDB.incrementWins(username);
+        sessionStorage.setItem('playerColor', ''); 
+      },
+      lostGame(username) {
+        console.log("in lost game method")
+        UsersDB.incrementLosses(username);
+        sessionStorage.setItem('playerColor', '');
+      }
+    },
+    watch: {
+      whiteEndState: function() {
+        let user = this.$cookies.get('username');
+        if (this.whiteEndState === 'WON') {
+          this.wonGame(user);
+          console.log('white WON');
+        }
+        else if (this.whiteEndState === 'LOST') {
+          this.lostGame(user);
+          console.log('white LOST');
+        }
+      },
+      blackEndState: function() {
+        let user = this.$cookies.get('username');
+        if (this.blackEndState === 'WON') {
+          this.wonGame(user);
+          console.log('black WON');
+        }
+        else if (this.blackEndState === 'LOST') {
+          this.lostGame(user);
+          console.log('black LOST');
+        }
+      }
     }
   }
 </script>

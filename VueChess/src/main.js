@@ -10,7 +10,10 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Main from './pages/users/Main'
 import QuickPlay from './pages/users/QuickPlay'
-import LeaderBoard from './pages/users/LeaderBoard'
+
+import UserTournament from './pages/users/UserTournament'
+import Leaderboards from './pages/users/Leaderboards'
+
 
 Vue.use(VModal, {dialog: true})
 Vue.use(VueCookies)
@@ -56,9 +59,12 @@ const router = new VueRouter({
       }
     },
     { path: '/', component: Main, beforeEnter: requireAuth },
-    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth },
-    { path: '/chessgame', component: ChessGame, beforeEnter: requireAuth },
-    { path: '/leaderboard', component: LeaderBoard , beforeEnter: requireAuth },
+
+    { path: '/quickPlay', component: QuickPlay, beforeEnter: requireAuth},
+    { path: '/tournament', component: UserTournament, beforeEnter: requireAuth },
+    { path: '/leaderboards', component: Leaderboards, beforeEnter: requireAuth },
+    { path: '/chessgame', component: ChessGame, beforeEnter: requireAuth }
+
   ]
 })
 

@@ -1,17 +1,17 @@
 <template>
     <div class="main-container">
-        <h1>Quick Play</h1>
+        <h1 class="main-title">Quick Play</h1>
+
+        <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
 
         <div>
             <div class="btn" v-on:click="showWaitModal">Random Player</div>
             <div class="btn" v-on:click="showModal">Invite Friend</div>
         </div>
 
-        <modal v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
+        <modal :randomJoinCode="randomJoinCode" v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
-        <waitModal v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
-
-        {{searchedUsername}}
+        <waitModal :isWaitModalVisible="isWaitModalVisible" v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
     </div>
 </template>
 
@@ -33,44 +33,82 @@ export default {
             isModalVisible: false,
             isErrorModalVisible: false,
             isWaitModalVisible: false,
-            searchedUsername: "",
+            searchedUsername: '',
             socket: io('http://localhost:3000'),
+            randomJoinCode: '',
+            leftArrow: require('../../assets/leftArrow.png')
         }
     },
     created() {
+        this.randomJoinCode = this.generateRandomCode();
     },
     methods: {
         showModal() {
-            this.isModalVisible = true;
+          this.isModalVisible = true;
+
+          // Creates new game room
+          let username = this.$cookies.get('username');
+          this.socket.emit('NEWGAME', { gameType: 'inviteGame', user: username, joinCode: this.randomJoinCode });
+
+          sessionStorage.setItem('gameRoomID', this.randomJoinCode);
+
+          this.socket.on('PLAYERCOLOR', (color) => {
+            sessionStorage.setItem('playerColor', color);
+          });
+
+          this.socket.on('STARTGAME', (game) => {
+            // Will only start a chess game if player is in the same game
+            let gameID = sessionStorage.getItem('gameRoomID');
+            if (gameID === game) {
+              this.$router.push('/chessgame').catch(err => {});
+            }
+          });
         },
-        hideModal(un) {
+        hideModal() {
             this.isModalVisible = false;
+
+          sessionStorage.setItem('playerColor', '');
+          // Removes the currently pending random game from the queue
+          this.socket.emit('LEAVEQUEUE', sessionStorage.getItem('gameRoomID'));
         },
         showWaitModal() {
             this.isWaitModalVisible = true;
 
             // Creates new game room
-            this.socket.emit('NEWGAME', "randomGame");
+            let username = this.$cookies.get('username');
+            this.socket.emit('NEWGAME', { gameType: 'randomGame', user: username });
 
             // Sets the gameRoomID into browser storage
             this.socket.on('setGameSession', (data) => {
+              let gameRoomID = sessionStorage.getItem('gameRoomID');
+              if (gameRoomID !== ('' || null)) {
+                sessionStorage.setItem('gameRoomID', '');
+              }
               sessionStorage.setItem('gameRoomID', data.gameID);
             });
 
             // Sets the playerColor for the game into browser storage
             this.socket.on('PLAYERCOLOR', (color) => {
+              let playerColor = sessionStorage.getItem('playerColor');
+              if (playerColor !== ('' || null)) {
+                sessionStorage.setItem('playerColor', '');
+              }
               sessionStorage.setItem('playerColor', color);
             });
 
-            this.socket.on('STARTGAME', () => {
-              this.$router.replace('/chessgame');
+            this.socket.on('STARTGAME', (game) => {
+              // Will only start a chess game if player is in the same game
+              let gameID = sessionStorage.getItem('gameRoomID');
+              if (gameID === game) {
+                this.$router.push('/chessgame').catch(err => {});
+              }
             });
         },
         hideWaitModal() {
           this.isWaitModalVisible = false;
-
+          sessionStorage.setItem('playerColor', '');
           // Removes the currently pending random game from the queue
-          this.socket.emit('LEAVEQUEUE', '');
+          this.socket.emit('LEAVEQUEUE', sessionStorage.getItem('gameRoomID'));
         },
         showErrorModal() {
             this.isErrorModalVisible = true;
@@ -78,9 +116,32 @@ export default {
         hideErrorModal() {
             this.isErrorModalVisible = false;
         },
-        submit(un) {
-            this.searchedUsername = un;
-            this.isModalVisible = false;
+        toMainPage() {
+            this.$router.replace('/')
+        },
+        submit(joinCode) {
+            console.log(joinCode);
+
+            sessionStorage.setItem('gameRoomID', joinCode);
+            let username = this.$cookies.get('username');
+            this.socket.emit('JOINGAME', { code: joinCode, user: username });
+
+            this.socket.on('PLAYERCOLOR', (color) => {
+              sessionStorage.setItem('playerColor', color);
+            });
+
+            //this.isModalVisible = false;
+        },
+        generateRandomCode() {
+          let code = '';
+          let randomString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789' + 'abcdefghijklmnopqrstuvxyz';
+
+          for (let i = 0; i < 10; i++) {
+            let index = (randomString.length * Math.random());
+            code = code + randomString.charAt(index);
+          }
+          console.log(code);
+          return code;
         }
     }
 }
@@ -96,6 +157,10 @@ export default {
     width:30%;
     border-radius: 10px;
     background: white;
+    position: relative;
+}
+.main-title{
+  margin-bottom: 20px;
 }
 .btn{
   border:2px solid lightgray;
@@ -115,5 +180,24 @@ export default {
     background-color: lightsalmon;
     border-color:lightsalmon;
   }
+}
+.arrow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 15px;
+  margin-left: 20px;
+  padding: 6px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  border: 2px solid lightgray;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+}
+.arrow:hover {
+  background: coral;
+  color: white;
+  border: 2px solid transparent;
 }
 </style>

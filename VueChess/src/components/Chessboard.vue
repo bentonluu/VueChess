@@ -1,19 +1,23 @@
 <template>
   <div id="chessboard">
-    <span class="playerName playerBlack">{{ playerBlack }}</span>
     <div v-if="playerColor === 'white'">
       <div :class="chessboardLayerWhite ? chessboardLayer[1] : chessboardLayer[0]">
+        <span class="playerName playerBlack">{{ playerList[1] }}</span>
         <chessboard class="cg-board-wrap" :fen="currentFenString" @onMove="showInfo"/>
-        <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <endGameModal :endState="endState" :whiteEndState="whiteEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>
+        <wonTournament v-show="isWonTournamentVisible" @close="hideWonTournament"></wonTournament>
+        <span class="playerName playerWhite">{{ playerList[0] }}</span>
       </div>
     </div>
     <div v-else>
       <div :class="chessboardLayerBlack ? chessboardLayer[1] : chessboardLayer[0]">
+        <span class="playerName playerWhite">{{ playerList[0] }}</span>
         <chessboard class="cg-board-wrap" orientation="black" :fen="currentFenString" @onMove="showInfo"/>
-        <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="returnToMainMenu"/>
+        <endGameModal :endState="endState" :blackEndState="blackEndState" class="topLayer" v-show="isEndGameModalVisible" @close="navigateAway"/>
+        <wonTournament v-show="isWonTournamentVisible" @close="hideWonTournament"></wonTournament>
+        <span class="playerName playerBlack">{{ playerList[1] }}</span>
       </div>
     </div>
-    <span class="playerName playerWhite">{{ playerWhite }}</span>
   </div>
 </template>
 
@@ -21,6 +25,9 @@
   import { chessboard } from 'vue-chessboard'
   import 'vue-chessboard/dist/vue-chessboard.css'
   import endGameModal from "./endGameModal";
+  import wonTournament from './wonTournamentModal'
+  import TournamentsDB from "../TournamentsDB";
+  import io from 'socket.io-client';
 
   export default {
     name: "Chessboard",
@@ -33,21 +40,26 @@
         chessboardLayerWhite: true,
         chessboardLayerBlack: false,
         isEndGameModalVisible: false,
+        isWonTournamentVisible: false,
         blackEndState: '',
         whiteEndState: '',
+        socket: io('http://localhost:3000'),
       }
     },
     props: {
-      currentFenString: String,
       // Assigned player color at start of game
       playerColor: String,
       // Current player color move
       currentColor: String,
+
+      currentFenString: String,
       endState: String,
+      playerList: Array,
     },
     components: {
       chessboard,
-      endGameModal
+      endGameModal,
+      wonTournament
     },
     methods: {
       showInfo(data) {
@@ -58,11 +70,87 @@
       showEndGameModal() {
         this.isEndGameModalVisible = true;
       },
-      returnToMainMenu() {
-        this.$router.replace('/');
+      navigateAway() {
+        this.isEndGameModalVisible = false
+
+        if (this.playerColor === "white") {
+          if (this.whiteEndState === "WON") {
+            this.updateTournament()
+          } else {
+            this.removeSessionStorageItems()
+            this.$router.push('/').catch(err => {});
+          }
+        } else {
+          if (this.blackEndState === "WON") {
+            this.updateTournament()
+          } else {
+            this.removeSessionStorageItems()
+            this.$router.push('/').catch(err => {});
+          }
+        }
       },
+      updateTournament() {
+        var tournamentGamePlayerSessions = JSON.parse(sessionStorage.getItem('tournamentGamePlayers'));
+        var tournamentId = sessionStorage.getItem('tournamentId');
+        var maxPlayers = sessionStorage.getItem('maxPlayers');
+
+        if (tournamentId != null) {
+          var winnerSessionId = sessionStorage.getItem('sessionId');
+          var loserSessionId = tournamentGamePlayerSessions.filter(i => i !== winnerSessionId)[0]
+
+          var tournamentInfo = {
+            tournamentID: tournamentId,
+            maxPlayers: maxPlayers,
+            gameWinner: winnerSessionId,
+            gameLoser: loserSessionId
+          }
+
+          this.socket.emit("winTournament", tournamentInfo)
+        }
+      },
+      hideWonTournament () {
+        this.removeSessionStorageItems()
+        this.isWonTournamentVisible = false
+        this.$router.push('/').catch(err => {});
+      },
+      removeSessionStorageItems() {
+          sessionStorage.removeItem('tournamentId')
+          sessionStorage.removeItem('gameRoomID')
+          sessionStorage.removeItem('tournamentGamePlayers')
+          sessionStorage.removeItem("maxPlayers")
+      }
     },
     created() {
+    },
+    mounted() {
+      this.socket.on("wonEntireTournament", () => {
+        this.isWonTournamentVisible = true
+      });
+
+      this.socket.on("startTournamentGame", (data) => {
+        console.log(data)
+        let sessionId = sessionStorage.getItem('sessionId');
+        if (data.sessionIDs.includes(sessionId)) {
+
+          sessionStorage.setItem('playerColor', data.colors[data.sessionIDs.indexOf(sessionId)]);
+          sessionStorage.setItem('maxPlayers', data.maxPlayers)
+          sessionStorage.setItem('tournamentGamePlayers', JSON.stringify(data.sessionIDs))
+
+          // Sets the gameRoomID into browser storage
+          console.log("sessions for tourn game:" + data.sessionIds)
+          if (data.sessionIDs.includes(sessionId)) {
+            sessionStorage.setItem('gameRoomID', data.gameID);
+          }
+
+                this.socket.on('STARTGAME', (game) => {
+                // Will only start a chess game if player is in the same game
+                    let gameID = sessionStorage.getItem('gameRoomID');
+                    if (gameID === game) {
+                        this.$router.go();
+                    }
+                });
+          }
+        })
     },
     watch: {
       // Enables or disables the corresponding player's chessboard when the currentPlayerMove changes
@@ -123,59 +211,63 @@
   }
 
   .playerName {
-    padding: 15px;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
-    color: white;
-    background: coral;
-    border-radius: 50px;
     min-width: 120px;
     display: inline-block;
     text-align: center;
   }
 
   .playerBlack {
-    margin-top: 10px;
     margin-bottom: 20px;
+    margin-top: 2vh;
   }
 
   .playerWhite {
-    margin-top: 25px;
-    margin-bottom: 10px;
+    margin-top: 20px;
+    color: coral;
   }
 
-  @media (min-height: 400px) and (min-width: 750px) {
+  @media (min-height: 600px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 320px;
-      width: 320px;
+      height: 410px;
+      width: 410px;
     }
   }
-
-  @media (min-height: 500px) and (min-width: 850px) {
+  @media (min-height: 650px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 420px;
-      width: 420px;
+      height: 430px;
+      width: 430px;
     }
   }
-
-  @media (min-height: 600px) and (min-width: 950px) {
+  @media (min-height: 700px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 520px;
-      width: 520px;
+      height: 440px;
+      width: 440px;
     }
   }
-
-  @media (min-height: 700px) and (min-width: 1050px) {
+  @media (min-height: 750px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 620px;
-      width: 620px;
+      height: 490px;
+      width: 490px;
     }
   }
-
-  @media (min-height: 900px) and (min-width: 1250px) {
+  @media (min-height: 800px) and (min-width: 1100px) {
     .cg-board-wrap {
-      height: 730px;
-      width: 730px;
+      height: 590px;
+      width: 590px;
+    }
+  }
+  @media (min-height: 850px) and (min-width: 1100px) {
+    .cg-board-wrap {
+      height: 630px;
+      width: 630px;
+    }
+  }
+  @media (min-height: 900px) and (min-width: 1100px) {
+    .cg-board-wrap {
+      height: 680px;
+      width: 680px;
     }
   }
 </style>

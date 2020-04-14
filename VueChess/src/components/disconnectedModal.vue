@@ -2,12 +2,12 @@
   <div class="modal-backdrop">
     <div class="modal">
       <section class="body">
-        <div>Waiting for next available opponent...</div>
-        <p>{{ minutes }} minutes {{ seconds }} seconds</p>
+        <div>Opponent has disconnected/left the game</div>
+        <div>You <span class="won">WON</span></div>
       </section>
 
       <footer class="footer">
-        <div class="btn" v-on:click="close">Leave</div>
+        <div class="btn" v-on:click="returnMain">Return to Main Menu</div>
       </footer>
     </div>
   </div>
@@ -15,51 +15,25 @@
 
 <script>
   export default {
-    name: 'waitModal',
+    name: 'gameSettingsModal',
     data () {
       return {
-        minutes: 0,
-        seconds: 0
       }
-    },
-    props: {
-      isWaitModalVisible: Boolean,
     },
     methods: {
-      close() {
-        this.$emit('close');
-        this.minutes = 0;
-        this.seconds = 0;
+      returnMain() {
+        this.$emit('returnMain');
       },
-      increaseTimer() {
-        if(this.seconds < 60) {
-          setTimeout(() => {
-            this.seconds += 1;
-            this.increaseTimer()
-          }, 1000)
-        }
-        else if (this.seconds == 60) {
-          this.minutes += 1;
-          this.seconds = 0;
-          this.increaseTimer();
-        }
-      }
-    },
-    watch: {
-      isWaitModalVisible: function() {
-        if (this.isWaitModalVisible === true) {
-          this.increaseTimer();
-        }
-        else {
-          this.minutes = 0;
-          this.seconds = 0;
-        }
-      }
     }
   }
 </script>
 
 <style lang="scss">
+  .won {
+    color: forestgreen;
+    font-weight: bold;
+  }
+
   .btn{
     border:2px solid lightgray;
     padding:15px 55px;
