@@ -59,6 +59,7 @@ export default {
     },
     methods: {
         close() {
+            this.tournamentDeleted = false
             this.$emit('close');
         },
         editTournament() {
