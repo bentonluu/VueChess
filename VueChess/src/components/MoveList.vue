@@ -49,7 +49,7 @@
   table {
     border-collapse: separate;
     border-spacing: 0;
-    margin:  auto;
+    margin: auto;
   }
 
   th, td {
@@ -83,5 +83,4 @@
   table tr:last-child td {
     border: none;
   }
-
 </style>

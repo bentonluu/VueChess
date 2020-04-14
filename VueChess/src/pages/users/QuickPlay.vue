@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-        <h1>Quick Play</h1>
+        <h1 class="main-title">Quick Play</h1>
 
         <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
 
@@ -11,7 +11,7 @@
 
         <modal :randomJoinCode="randomJoinCode" v-show="isModalVisible" @close="hideModal" @submit="submit"></modal>
         <errorModal v-show="isErrorModalVisible" @close="hideErrorModal"></errorModal>
-        <waitModal v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
+        <waitModal :isWaitModalVisible="isWaitModalVisible" v-show="isWaitModalVisible" @close="hideWaitModal"></waitModal>
     </div>
 </template>
 
@@ -159,6 +159,9 @@ export default {
     background: white;
     position: relative;
 }
+.main-title{
+  margin-bottom: 20px;
+}
 .btn{
   border:2px solid lightgray;
   padding:15px 55px;
@@ -179,12 +182,22 @@ export default {
   }
 }
 .arrow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-left: 5px;
-    height: 50px;
-    width: 50px;
-    cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 15px;
+  margin-left: 20px;
+  padding: 6px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  border: 2px solid lightgray;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+}
+.arrow:hover {
+  background: coral;
+  color: white;
+  border: 2px solid transparent;
 }
 </style>

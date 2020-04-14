@@ -2,17 +2,18 @@
     <div class="modal-backdrop">
         <div class="modal">
             <section class="body">
-
+                <h1 class="title" v-show="create">Create Tournament</h1>
+                <h1 class="title" v-show="!create">Edit Tournament</h1>
                 <div class="mainrow">
                     <div class="maincolumn">
                         <div class="row">
                             <label>Name:</label>
-                            <input v-model="name" type="text" required>
+                            <input v-model="create ? name : tournamentInfo.name" type="text" required>
                         </div>
 
                         <div class="row">
                             <label>Player Capacity:</label>
-                            <input v-model="maxPlayers" type="text" placeholder="Enter a number divisible by 2" required>
+                            <input v-model="create ? maxPlayers : tournamentInfo.maxPlayers" type="text" placeholder="Number divisible by 2" required>
                         </div>
 
                         <div class="row">
@@ -31,14 +32,15 @@
             <p class="signUp" v-if="created">Tournament created!</p>
             <p class="error" v-if="errorDateFormat">Date does not match format.</p>
             <p class="error" v-if="errorTime">Time must be between 00:00 and 24:00.</p>
-            <p class="error" v-if="errorFieldsEmpty">Please Fill out every field.</p>
+            <p class="error" v-if="errorFieldsEmpty">Please fill out every field.</p>
             <p class="error" v-if="errorDuplicate">Tournament already exists.</p>
             <p class="error" v-if="errorPlayerCount">Number of players must be an even number.</p>
 
             <footer class="footer">
-                <div class="btn buttonSpacing" v-on:click="close">Close</div>
-                <div class="btn buttonSpacing" v-show="!create" v-on:click="createTournament">Update</div>
                 <div class="btn buttonSpacing" v-show="create" v-on:click="createTournament">Create</div>
+                <div class="btn buttonSpacing" v-show="!create" v-on:click="createTournament">Update</div>
+                <div class="btn buttonSpacing" v-on:click="close">Close</div>
+
             </footer>
         </div>
     </div>
@@ -65,6 +67,14 @@ export default {
             startTime: ''
         }
     },
+    watch: {
+        /*create: function() {
+          if (!this.create) {
+            let date = new Date(this.tournamentInfo.startTime)
+            this.startDate = date.getUTCFullYear().toString() + '-' + date.getMonth().toString() + '-' + date.getUTCDay().toString();
+          }
+        }*/
+    },
     methods: {
         close() {
             this.created = false
@@ -75,7 +85,6 @@ export default {
             this.$emit('close');
         },
         createTournament() {
-
             if (!this.startDate.match(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)) {
                 this.errorDateFormat = true
                 return
@@ -141,7 +150,8 @@ export default {
 .mainrow {
     display: flex;
     background-color: lightgray;
-    border: 1px solid black;
+    border: 2px solid black;
+    border-radius: 10px;
 }
 .row {
     display: flex;
@@ -197,5 +207,41 @@ export default {
 .buttonSpacing {
     margin-right: 5px;
     margin-left: 5px;
+}
+input{
+  font-size: 18px;
+  margin: 20px;
+  width: 90%;
+  display: block;
+  border: none;
+  padding: 10px;
+  border-bottom: solid 2px grey;
+  transition:ease-in 0.2s all;
+  &:focus{
+    outline: none;
+    border-color: coral;
+  }
+}
+label {
+  font-weight: bold;
+}
+.btn{
+  border:2px solid lightgray;
+  padding:15px 55px;
+  flex:1;
+  font-size:18px;
+  margin-bottom: 20px;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+  cursor:pointer;
+  &:hover{
+    background-color: coral;
+    border-color:coral;
+    color:white;
+  }
+  &:active{
+    background-color: lightsalmon;
+    border-color:lightsalmon;
+  }
 }
 </style>
