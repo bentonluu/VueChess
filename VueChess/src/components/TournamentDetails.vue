@@ -4,10 +4,10 @@
             <section class="body">
 
                 <div class="options">
-                    <h1><strong>Name:</strong> {{tournamentInfo.name}}</h1>
-                    <div class="test">
-                        <div class="btn test2" v-on:click="editTournament" v-show="isAdmin">Edit</div>
-                        <div class="btn test2" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
+                    <h1>{{tournamentInfo.name}}</h1>
+                    <div class="test"> 
+                        <div class="btn test2" v-on:click="editTournament" v-show="isAdmin" v-bind:style="{'pointer-events': 'none'}">Edit</div>
+                        <div class="btn test2" v-bind:style="{'pointer-events': (this.deleteDisable || this.disable) ? 'none' : null}" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
                         <div v-bind:style="{'pointer-events': this.disable ? 'none' : null}" class="btn test2" v-on:click="joinTournament">Join</div>
                     </div>
                 </div>
@@ -31,7 +31,8 @@
                 </div>
             </section>
 
-            <p class="delete" v-if="tournamentDeleted">Tournament deleted</p>
+            <p class="success" v-if="tournamentDeleted">Tournament deleted</p>
+            <p class="success" v-if="isJoinedTournamentVisible">Joined Tournament</p>
 
             <footer class="footer">
                 <div class="btn closeButton" v-on:click="close">Close</div>
@@ -51,17 +52,23 @@ export default {
         return {
             isAdmin: false,
             tournamentDeleted: false,
+            deleteDisable: false,
+            isJoinedTournamentVisible: false,
             socket: io('http://localhost:3000')
         }
     },
     methods: {
         close() {
+            this.tournamentDeleted = false
+            this.deleteDisable = false
             this.$emit('close');
         },
         editTournament() {
             this.$emit('edit');
         },
         deleteTournament() {
+            this.deleteDisable = true;
+            this.disable = true;
             TournamentsDB.deleteTournament(this.tournamentInfo.name)
             this.tournamentDeleted = true
         },
@@ -76,6 +83,9 @@ export default {
                 console.log("Tournament ID: " + data.tournamentID);
                 sessionStorage.setItem('tournamentId', data.tournamentID);
             });
+
+            this.disable = true;
+            this.deleteDisable = true;
         }
     },
     created() {
@@ -84,6 +94,10 @@ export default {
         }
     },
     mounted() {
+
+        this.socket.on("showJoined", () => {
+            this.isJoinedTournamentVisible = true
+        })
 
         this.socket.on("startTournamentGame", (data) => {
             console.log(data)
@@ -173,7 +187,7 @@ export default {
     margin-left: 10px;
     margin-bottom: 10px;
 }
-.delete {
+.success {
   color: limegreen;
 }
 .test {

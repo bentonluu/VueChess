@@ -94,6 +94,7 @@ io.on('connection', function(socket) {
             console.log("added " + data.sessionID + " to tournament " + data.tournamentID)
             addValue(data.tournamentID, data.sessionID)
             socket.emit("setTournament", {tournamentID: data.tournamentID})
+            socket.emit("showJoined")
         } 
         console.log("tournament size: " + tournamentsMap.get(data.tournamentID).length)
         if (tournamentsMap.get(data.tournamentID).length == data.maxPlayers) {
