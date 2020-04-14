@@ -14,9 +14,9 @@
           <tbody>
             <tr v-for="row in rows">
               <td>{{row.username}}</td>
-              <td>{{row.win}}</td>
-              <td>{{row.loss}}</td>
-              <td>{{row.ratio}}</td>
+              <td>{{row.wins}}</td>
+              <td>{{row.losses}}</td>
+              <td>{{row.wins/row.losses}}</td>
             </tr>
           </tbody>
         </table>
@@ -33,15 +33,11 @@ import modal from '../../components/users/modal'
 import errorModal from '../../components/users/errorModal'
 import UsersDB from '../../UsersDB'
 
-var winlossdata = []
-
-
 export default {
     name: 'leaderBoard',
     components: {
         modal,
         errorModal
-
     },
     data () {
         return {
@@ -72,19 +68,12 @@ export default {
             this.isModalVisible = false;
         }
     },
-    created:
-      async function () {
-            let userInfo = await UsersDB.getUsers();
-            userInfo.sort((a, b) => (a.wins < b.wins) ? 1 : -1)
-
-            var i;
-            var rows
-            for (i = 0; i < userInfo.length; i++) {
-              rows[i]=[userInfo[i].username, userInfo[i].losses, userInfo[i].loss,0]
-              winlossdata[i]+=rows[i]
-            }
-            this.rows= winlossdata
-      }
+    async created(){
+      this.rows = await UsersDB.getUsers().then(function(x){
+           x.sort((a, b) => (a.wins < b.wins) ? 1 : -1)
+          return x;
+      })
+    }
 }
 </script>
 
@@ -94,8 +83,8 @@ export default {
     flex-direction: column;
     align-items: center;
     padding:20px;
-    min-width: 300px;
-    width:50%;
+    min-width: 100px;
+    width:70%;
     border-radius: 10px;
     background: white;
 }
@@ -123,7 +112,7 @@ table {
   width: 750px;
   border-collapse: collapse;
   border: 3px solid #44475C;
-  margin: 10px 10px 0 10px;
+  margin: 0px 0px 0 0px;
 }
 
 table th {
