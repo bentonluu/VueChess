@@ -1,16 +1,12 @@
 <template>
   <div class="main-container">
-    <h2 class="logo">Chess & Chill <span v-show="isAdmin">(Admin)</span></h2>
+    <h2 class="logo ">Chess & Chill <span v-show="isAdmin">(Admin)</span></h2>
     <h1 class="main-title">Welcome <strong v-bind:style="{color:'coral'}">{{this.$cookies.get("username")}}</strong></h1>
-
     <div>
-      <div class="btn" v-on:click="toQuickPlay">Quick Play</div>
-      <div class="btn" v-on:click="toTournament" >Tournaments</div>
-      <div class="btn" v-on:click="toLeaderboards">Leaderboards</div>
+      <div class="btn" v-on:click="goToQuickPlay">Quick Play</div>
+      <div class="btn" v-on:click="goToLeaderBoard">Leader Board</div>
       <div class="btn" v-on:click="logOut">Log Out</div>
     </div>
-
-
   </div>
 </template>
 
@@ -39,8 +35,13 @@ export default {
     toTournament(){
       this.$router.push('tournament')
     },
-    toLeaderboards(){
-      this.$router.push('leaderboards')
+
+    goToQuickPlay() {
+      this.$router.replace({path: '/quickPlay'});
+    },
+    goToLeaderBoard() {
+      this.$router.replace({path: '/leaderboard'});
+
     }
   },
   created() {
