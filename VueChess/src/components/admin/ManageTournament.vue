@@ -8,12 +8,12 @@
                     <div class="maincolumn">
                         <div class="row">
                             <label>Name:</label>
-                            <input v-model="create ? name : tournamentInfo.name" type="text" required>
+                            <input v-model="name" type="text" required>
                         </div>
 
                         <div class="row">
                             <label>Player Capacity:</label>
-                            <input v-model="create ? maxPlayers : tournamentInfo.maxPlayers" type="text" placeholder="Number divisible by 2" required>
+                            <input v-model="maxPlayers" type="text" placeholder="Number divisible by 2" required>
                         </div>
 
                         <div class="row">
@@ -67,16 +67,12 @@ export default {
             startTime: ''
         }
     },
-    watch: {
-        /*create: function() {
-          if (!this.create) {
-            let date = new Date(this.tournamentInfo.startTime)
-            this.startDate = date.getUTCFullYear().toString() + '-' + date.getMonth().toString() + '-' + date.getUTCDay().toString();
-          }
-        }*/
-    },
     methods: {
         close() {
+            this.name = '';
+            this.maxPlayers = '';
+            this.startDate = '';
+            this.startTime = '';
             this.created = false
             this.errorTime = false
             this.errorFieldsEmpty = false
