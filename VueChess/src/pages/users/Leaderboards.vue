@@ -2,6 +2,10 @@
     <div class="main-container">
         <h1>Chess Leader Board</h1>
         <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
+        <img class="search" :src="search" alt="right search" width="96" height="96" v-on:click="searchUsername(message)">
+        <input v-model="message" placeholder="Search User">
+
+
         <table id="firstTable">
           <thead>
             <tr>
@@ -43,6 +47,7 @@ export default {
         return {
             rows: [],
             leftArrow: require('../../assets/leftArrow.png'),
+            search: require('../../assets/search.png'),
             isModalVisible: false,
             isErrorModalVisible: false,
             searchedUsername: "",
@@ -53,6 +58,17 @@ export default {
     methods: {
         toMainPage() {
             this.$router.replace('/')
+        },
+        async searchUsername(username){
+            this.rows = await UsersDB.getUsers().then(function(x){
+
+              for (var i=0; i < x.length; i++) {
+                if (x[i].username === username) {
+                    x.unshift(x.splice(i, 1)[0]);
+                    return x;
+                }
+              }
+            })
         },
         showModal() {
             this.isModalVisible = true;
@@ -153,6 +169,25 @@ table tbody tr:nth-child(2n) td {
   transition: ease-out 0.2s all;
 }
 .arrow:hover {
+  background: coral;
+  color: white;
+  border: 2px solid transparent;
+}
+.search {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 15px;
+  margin-right: 20px;
+  padding: 6px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  border: 2px solid lightgray;
+  border-radius: 50px;
+  transition: ease-out 0.2s all;
+}
+.search:hover {
   background: coral;
   color: white;
   border: 2px solid transparent;
