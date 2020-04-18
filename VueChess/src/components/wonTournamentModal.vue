@@ -2,7 +2,7 @@
     <div class="modal-backdrop">
         <div class="modal">
             <section class="body">
-                <div>You Won The Tournament</div>
+              <div><strong> You <span class="won">WON</span> The Tournament</strong></div>
             </section>
 
             <footer class="footer">
@@ -28,6 +28,9 @@ export default {
 </script>
 
 <style lang="scss">
+.won{
+  color: limegreen;
+}
 .code {
   font-weight: bold;
 }
