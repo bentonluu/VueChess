@@ -68,15 +68,20 @@ export default {
         }
     },
     watch: {
-        /*create: function() {
-          if (!this.create) {
-            let date = new Date(this.tournamentInfo.startTime)
-            this.startDate = date.getUTCFullYear().toString() + '-' + date.getMonth().toString() + '-' + date.getUTCDay().toString();
-          }
-        }*/
+     /*create: function() {
+       if (!this.create) {
+         let date = new Date(this.tournamentInfo.startTime)
+         this.startDate = date.getUTCFullYear().toString() + '-' + date.getMonth().toString() + '-' + date.getUTCDay().toString();
+       }
+     }*/
     },
     methods: {
+
         close() {
+            this.name = '';
+            this.maxPlayers = '';
+            this.startDate = '';
+            this.startTime = '';
             this.created = false
             this.errorTime = false
             this.errorFieldsEmpty = false
