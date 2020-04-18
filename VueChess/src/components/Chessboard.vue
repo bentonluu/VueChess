@@ -71,22 +71,30 @@
         this.isEndGameModalVisible = true;
       },
       navigateAway() {
-        this.isEndGameModalVisible = false
-
-        if (this.playerColor === "white") {
-          if (this.whiteEndState === "WON") {
-            this.updateTournament()
+        this.isEndGameModalVisible = false;
+        let tournId = sessionStorage.getItem('tournamentId');
+        //For tournament games
+        if (tournId != null) {
+          if (this.playerColor === "white") {
+            if (this.whiteEndState === "WON") {
+              this.updateTournament()
+            } else {
+              this.removeSessionStorageItems()
+              this.$router.push('/').catch(err => {});
+            }
           } else {
-            this.removeSessionStorageItems()
-            this.$router.push('/').catch(err => {});
+            if (this.blackEndState === "WON") {
+              this.updateTournament()
+            } else {
+              this.removeSessionStorageItems()
+              this.$router.push('/').catch(err => {});
+            }
           }
-        } else {
-          if (this.blackEndState === "WON") {
-            this.updateTournament()
-          } else {
-            this.removeSessionStorageItems()
-            this.$router.push('/').catch(err => {});
-          }
+        }
+        // For quickplay and invite games
+        else {
+          this.removeSessionStorageItems();
+          this.$router.push('/').catch(err => {});
         }
       },
       updateTournament() {
