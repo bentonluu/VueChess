@@ -5,7 +5,7 @@
 
                 <div class="options">
                     <h1>{{tournamentInfo.name}}</h1>
-                    <div class="test"> 
+                    <div class="test">
                         <div class="btn test2" v-on:click="editTournament" v-show="isAdmin" v-bind:style="{'pointer-events': 'none'}">Edit</div>
                         <div class="btn test2" v-bind:style="{'pointer-events': (this.deleteDisable || this.disable) ? 'none' : null}" v-on:click="deleteTournament" v-show="isAdmin">Delete</div>
                         <div v-bind:style="{'pointer-events': this.disable ? 'none' : null}" class="btn test2" v-on:click="joinTournament">Join</div>
@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="creator">
-                    <strong>Creator:</strong> test
+                    <strong>Creator:</strong> bill bo
                 </div>
 
                 <div class="mainrow">
