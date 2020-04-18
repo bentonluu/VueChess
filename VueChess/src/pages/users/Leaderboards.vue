@@ -1,26 +1,27 @@
 <template>
     <div class="main-container">
-        <h1>Chess Leader Board</h1>
+        <h1>Leaderboard</h1>
         <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
         <img class="search" :src="search" alt="right search" width="96" height="96" v-on:click="searchUsername(message)">
-        <input v-model="message" placeholder="Search User">
-
+        <div class="searchContainer">
+          <input v-model="message" placeholder="Search User">
+        </div>
 
         <table id="firstTable">
           <thead>
             <tr>
               <th>Username</th>
               <th>Win(s)</th>
-              <th>Loss</th>
+              <th>Loss(es)</th>
               <th>W/L Ratio</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="row">
             <tr v-for="row in rows">
               <td>{{row.username}}</td>
               <td>{{row.wins}}</td>
               <td>{{row.losses}}</td>
-              <td>{{row.wins/row.losses}}</td>
+              <td>{{ratioCalculation(row)}}</td>
             </tr>
           </tbody>
         </table>
@@ -52,10 +53,19 @@ export default {
             isErrorModalVisible: false,
             searchedUsername: "",
             winlossdata : [],
-            userinfo: []
+            userinfo: [],
+            message: null,
         }
     },
     methods: {
+        ratioCalculation(row) {
+          if(row.losses === 0) {
+            return row.wins.toFixed(2);
+          }
+          else {
+            return (row.wins / row.losses).toFixed(2);
+          }
+        },
         toMainPage() {
             this.$router.replace('/')
         },
@@ -96,7 +106,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main-container{
     display:flex;
     flex-direction: column;
@@ -126,33 +136,39 @@ export default {
     border-color:lightsalmon;
   }
 }
+.searchContainer {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+}
 table {
-  font-family: 'Open Sans', sans-serif;
-  width: 750px;
   border-collapse: collapse;
-  border: 3px solid #44475C;
-  margin: 0px 0px 0 0px;
+  margin: 0;
+  box-shadow: 0 0 12px lightgrey;
 }
 
 table th {
-  text-transform: uppercase;
-  text-align: left;
-  background: #44475C;
+  text-align: center;
+  background: coral;
   color: #FFF;
-  padding: 8px;
+  padding: 14px;
   min-width: 30px;
 }
 
 table td {
-  text-align: left;
-  padding: 8px;
-  border-right: 2px solid #7D82A8;
+  text-align: center;
+  padding: 14px;
 }
 table td:last-child {
   border-right: none;
 }
 table tbody tr:nth-child(2n) td {
-  background: #D4D8F9;
+  background: lightgray;
+}
+input {
+  width: 100%;
+  margin: 0 0 10px 0;
+  text-align: center;
 }
 .arrow {
   position: absolute;
