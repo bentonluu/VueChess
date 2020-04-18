@@ -8,12 +8,12 @@
                     <div class="maincolumn">
                         <div class="row">
                             <label>Name:</label>
-                            <input v-model="tournamentInfo.name" type="text" required>
+                            <input v-model="name" type="text" required>
                         </div>
 
                         <div class="row">
                             <label>Player Capacity:</label>
-                            <input v-model="tournamentInfo.maxPlayers" type="text" placeholder="Number divisible by 2" required>
+                            <input v-model="maxPlayers" type="text" placeholder="Number divisible by 2" required>
                         </div>
 
                         <div class="row">
@@ -105,6 +105,7 @@ export default {
                 maxPlayers: this.maxPlayers,
                 startTime: startTime
             }
+            console.log(tournament)
 
             TournamentsDB.insertTournament(tournament).then(res => {
                 if (res == "Tournament Created") {

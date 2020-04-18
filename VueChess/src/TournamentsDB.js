@@ -28,6 +28,7 @@ class TournamentsDB{
 
      static async insertTournament(tournament){
         //
+        console.log(tournament.name)
         if(tournament.name.length===0 || tournament.maxPlayers.length ===0 || tournament.startTime.length ===0) return "Incomplete Fields"
         // check for dupplicates
         var existingTournaments = await this.getTournament(tournament.name)
