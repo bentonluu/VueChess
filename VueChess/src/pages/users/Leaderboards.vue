@@ -2,9 +2,9 @@
     <div class="main-container">
         <h1>Leaderboard</h1>
         <img class="arrow" :src="leftArrow" alt="left arrow" v-on:click="toMainPage">
-        <img class="search" :src="search" alt="right search" width="96" height="96" v-on:click="searchUsername(message)">
         <div class="searchContainer">
           <input v-model="message" placeholder="Search User">
+          <img class="search" :src="search" alt="right search" width="96" height="96" v-on:click="searchUsername(message)">
         </div>
 
         <table id="firstTable">
@@ -113,7 +113,8 @@ export default {
     align-items: center;
     padding:20px;
     min-width: 100px;
-    width:70%;
+    width:30%;
+    min-width: 400px;;
     border-radius: 10px;
     background: white;
 }
@@ -190,22 +191,19 @@ input {
   border: 2px solid transparent;
 }
 .search {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: 15px;
-  margin-right: 20px;
-  padding: 6px;
-  height: 40px;
-  width: 40px;
+
+  align-self: center;
+  height: 30px;
+  width: 30px;
   cursor: pointer;
-  border: 2px solid lightgray;
-  border-radius: 50px;
+  border: 3px solid white;
+  border-radius: 100%;
+  margin-left:10px;
   transition: ease-out 0.2s all;
 }
 .search:hover {
   background: coral;
-  color: white;
-  border: 2px solid transparent;
+
+  border: 3px solid transparent;
 }
 </style>
